@@ -1,0 +1,5 @@
+C:\Users\ambre\OneDrive\Documents\ENSC 1A\S6\projet-ensemenc-vey-emma\obj\Debug\net8.0\Jeu.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ambre\OneDrive\Documents\ENSC 1A\S6\projet-ensemenc-vey-emma\obj\Debug\net8.0\Jeu.AssemblyInfoInputs.cache
+C:\Users\ambre\OneDrive\Documents\ENSC 1A\S6\projet-ensemenc-vey-emma\obj\Debug\net8.0\Jeu.AssemblyInfo.cs
+C:\Users\ambre\OneDrive\Documents\ENSC 1A\S6\projet-ensemenc-vey-emma\obj\Debug\net8.0\Jeu.csproj.CoreCompileInputs.cache
+C:\Users\ambre\OneDrive\Documents\ENSC 1A\S6\projet-ensemenc-vey-emma\obj\Debug\net8.0\Jeu.sourcelink.json
