@@ -123,7 +123,7 @@ public abstract class Plante
         {
             SanteActuelle -= 5; //Déclin de santé avec l'âge
         }
-    }
+    }}
 
     //méthode récolter des produits
     public virtual int Recolter()
@@ -148,5 +148,4 @@ public abstract class Plante
             SanteActuelle = Math.Min(SanteActuelle + 15, 100);
         }
     }
-}
 }

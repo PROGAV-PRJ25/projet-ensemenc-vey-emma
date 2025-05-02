@@ -1,21 +1,20 @@
-using System;
+﻿using System;
 using System.Threading;
-   static void Main(string[] args)
-    {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
-        Console.Title = "Potager et Cie";
-        // Augmenter la taille du buffer de la console hauteur à 50lignes ou plus évite les bugs
-        Console.SetBufferSize(Console.WindowWidth, 50); 
-        
-        Console.Clear(); 
-        DessinerTitre();
-        DessinerPlantes();
-        
-        Console.SetCursorPosition(0, 25);
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("Appuyez sur une touche pour quitter...");
-        Console.ReadKey();
-    }
+
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+Console.Title = "Potager et Cie";
+// Augmenter la taille du buffer de la console hauteur à 50lignes ou plus évite les bugs
+Console.SetBufferSize(Console.WindowWidth, 50); 
+
+Console.Clear(); 
+DessinerTitre();
+DessinerPlantes();
+
+Console.SetCursorPosition(0, 25);
+Console.ForegroundColor = ConsoleColor.White;
+Console.WriteLine("Appuyez sur une touche pour quitter...");
+Console.ReadKey();
+
 
     static void DessinerTitre()
     {

@@ -13,9 +13,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ambre\\OneDrive\\Documents\\ENSC 1A\\S6\\projet-ensemenc-vey-emma\\Jeu.csproj",
-      "projectName": "Jeu",
-      "projectPath": "C:\\Users\\ambre\\OneDrive\\Documents\\ENSC 1A\\S6\\projet-ensemenc-vey-emma\\Jeu.csproj",
+      "projectUniqueName": "C:\\Users\\ambre\\OneDrive\\Documents\\ENSC 1A\\S6\\projet-ensemenc-vey-emma\\projet-ensemenc-vey-emma.csproj",
+      "projectName": "projet-ensemenc-vey-emma",
+      "projectPath": "C:\\Users\\ambre\\OneDrive\\Documents\\ENSC 1A\\S6\\projet-ensemenc-vey-emma\\projet-ensemenc-vey-emma.csproj",
       "packagesPath": "C:\\Users\\ambre\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\ambre\\OneDrive\\Documents\\ENSC 1A\\S6\\projet-ensemenc-vey-emma\\obj\\",
       "projectStyle": "PackageReference",

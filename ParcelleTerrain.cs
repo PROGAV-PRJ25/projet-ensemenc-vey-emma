@@ -1,17 +1,17 @@
 using System;
-
 public class ParcelleTerrain
 {
-    private Terrain TerrainParent { get; set; }//classe parent
-    private Plante PlanteCourante { get; set; }
-    
-    //constructeur de base
+    private Terrain TerrainParent { get; set; } //classe parent
+    private Plante? PlanteCourante { get; set; }
+
+    // Constructeur
     public ParcelleTerrain(Terrain terrainParent)
     {
         TerrainParent = terrainParent;
-        PlanteCourante = null; //initialise les parcelles à vide
-    
-    public bool EstVide() //vérifie si c'est vide
+        PlanteCourante = null; // initialise les parcelles à vide
+    }
+
+    public bool EstVide() // doit être ici, en dehors du constructeur
     {
         return PlanteCourante == null;
     }
@@ -102,4 +102,4 @@ public class ParcelleTerrain
                (PlanteCourante.EstMalade ? " (Malade)" : "") + 
                $" - Production: {PlanteCourante.ProductionActuelle}/{PlanteCourante.NombreProduction}";
     }
-}}
+}
