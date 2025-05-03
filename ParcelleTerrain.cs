@@ -2,7 +2,7 @@ using System;
 public class ParcelleTerrain
 {
     private Terrain TerrainParent { get; set; } //classe parent
-    private Plante? PlanteCourante { get; set; }
+    protected internal Plante? PlanteCourante { get; set; } // Changé de private à protected internal
 
     // Constructeur
     public ParcelleTerrain(Terrain terrainParent)
@@ -29,7 +29,7 @@ public class ParcelleTerrain
     //fct pour avancer dans le temps et faire progresser la parcelle d'une semaine
     public void ProgresserSemaine(string typeTerrain, double niveauHumidite, double niveauSoleil, double temperature, double espaceDisponible)
     {
-        if (!EstVide())
+        if (!EstVide() && PlanteCourante != null)
         {
             PlanteCourante.Progresser(typeTerrain, niveauHumidite, niveauSoleil, temperature, espaceDisponible);
         }
@@ -38,21 +38,21 @@ public class ParcelleTerrain
     //avoir le score santé d'une plante entre 0 et 100
     public double ObtenirSante()
     {
-        return EstVide() ? 0 : PlanteCourante.SanteActuelle;
+        return EstVide() || PlanteCourante == null ? 0 : PlanteCourante.SanteActuelle;
     }
     public double ObtenirTaille()//permet d'avoir la taille de la plante
     {
-        return EstVide() ? 0 : PlanteCourante.TailleActuelle;
+        return EstVide() || PlanteCourante == null ? 0 : PlanteCourante.TailleActuelle;
     }
     public bool EstMalade() //si la plante est malade 
     {
-        return !EstVide() && PlanteCourante.EstMalade;
+        return !EstVide() && PlanteCourante != null && PlanteCourante.EstMalade;
     }
 
     //arrosage
     public void Arroser()
     {
-        if (!EstVide())
+        if (!EstVide() && PlanteCourante != null)
         {
             PlanteCourante.Arroser();
         }
@@ -61,7 +61,7 @@ public class ParcelleTerrain
     //Soigner la plante
     public void Soigner()
     {
-        if (!EstVide())
+        if (!EstVide() && PlanteCourante != null)
         {
             PlanteCourante.Soigner();
         }
@@ -70,7 +70,7 @@ public class ParcelleTerrain
     //Récolter les produits de la plante si fruits légumes par ex
     public int Recolter()
     {
-        if (!EstVide())
+        if (!EstVide() && PlanteCourante != null)
         {
             return PlanteCourante.Recolter();
         }
@@ -91,15 +91,24 @@ public class ParcelleTerrain
     //voir le visu de la plante
     public char ObtenirVisuel()
     {
-        return EstVide() ? '.' : PlanteCourante.Visuel;
+        return EstVide() || PlanteCourante == null ? '.' : PlanteCourante.Visuel;
     }
     public string ObtenirInfoPlante()//donne les infos
     {
-        if (EstVide())
+        if (EstVide() || PlanteCourante == null)
             return "Parcelle vide";
             
         return $"{PlanteCourante.Nom} - Santé: {PlanteCourante.SanteActuelle}% - Taille: {PlanteCourante.TailleActuelle}cm" + 
                (PlanteCourante.EstMalade ? " (Malade)" : "") + 
                $" - Production: {PlanteCourante.ProductionActuelle}/{PlanteCourante.NombreProduction}";
+    }
+    
+    // Nouvelle méthode pour infecter une plante
+    public void Infecter()
+    {
+        if (!EstVide() && PlanteCourante != null)
+        {
+            PlanteCourante.EstMalade = true;
+        }
     }
 }

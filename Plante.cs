@@ -19,7 +19,7 @@ public abstract class Plante
     //paramètres d'état descriptifs
     public double TailleActuelle { get; protected set; } //taille actuelle en cm
     public double SanteActuelle { get; protected set; } //pourcentage de santé entre 0 et 100
-    public bool EstMalade { get; protected set; } //indique si la plante est malade
+    public bool EstMalade { get; set; } //indique si la plante est malade - changé de protected set à public set
     public int Age { get; protected set; } //âge en semaines
     public int ProductionActuelle { get; protected set; } //nombre de fruits/fleurs actuellement produits
 
@@ -95,21 +95,7 @@ public abstract class Plante
         {
             //la plante pousse proportionnellement au coefficient, donc plus le coeff est bien plus elle pousse vite 
             TailleActuelle += VitessePousse * (coefficient / 100);
-            
-        //     //Augmentation potentielle de la production si la plante est mature
-        //     if (TailleActuelle >= PlaceNecessaire * 50) //50 cm par unité de place comme exemple
-        //     {
-        //         double facteurProduction = (coefficient / 100) * (SanteActuelle / 100);
-        //         ProductionActuelle = (int)Math.Min(NombreProduction, ProductionActuelle + (NombreProduction * facteurProduction / 10));
-        //     }
-            
-        //     //Chance de guérison si la plante est malade 
-        //     if (EstMalade && new Random().NextDouble() < (coefficient / 200))
-        //     {
-        //         EstMalade = false;
-        //         SanteActuelle = Math.Min(SanteActuelle + 10, 100);
-        //     }
-        // }
+        }
         
         //proba de tomber malade
         if (!EstMalade && new Random().NextDouble() < 0.05) //5% de chance par semaine
@@ -123,7 +109,7 @@ public abstract class Plante
         {
             SanteActuelle -= 5; //Déclin de santé avec l'âge
         }
-    }}
+    }
 
     //méthode récolter des produits
     public virtual int Recolter()
