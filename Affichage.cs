@@ -3,7 +3,7 @@ using System.Threading;
 
 //Classe responsable de l'affichage visuel du terrain et des éléments du jeu
 public static class AffichageTerrain
-{
+{ 
     //Couleurs pour différents types de terrain
     private static readonly ConsoleColor CouleurSable = ConsoleColor.Yellow;
     private static readonly ConsoleColor CouleurArgile = ConsoleColor.DarkYellow;
@@ -27,7 +27,7 @@ public static class AffichageTerrain
                 //Détermine la couleur de fond selon le type de terrain
                 DefiniCouleurTerrain(terrain.TypeTerrain);
                 
-                char visuel = terrain.Grille[x, y].ObtenirVisuel();
+                string visuel = terrain.Grille[x, y].ObtenirVisuel();
                 
                 //Couleurs pour l'état des plantes
                 if (!terrain.Grille[x, y].EstVide())

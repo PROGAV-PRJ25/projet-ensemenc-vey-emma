@@ -13,7 +13,7 @@ public abstract class Plante
     public string MaladiePotentielle { get; protected set; } //maladies potentielles qu'elle peut avoir (probabilité gerer aleatoirement)
     public double EsperanceVie { get; protected set; } //nombre de semaine ou année de vie de la plante
     public double NombreProduction { get; protected set; } //nombre de fruit ou fleur par pied qu'elle peut produire au max en 1 saison
-    public char Visuel { get; set; } //emoji de la plante
+    public string Visuel { get; set; } //emoji de la plante
     public double NiveauHumiditePref { get; protected set; } //pourcentage d'humidite prefere de la plante pour se developper au max
     
     //paramètres d'état descriptifs
@@ -23,9 +23,11 @@ public abstract class Plante
     public int Age { get; protected set; } //âge en semaines
     public int ProductionActuelle { get; protected set; } //nombre de fruits/fleurs actuellement produits
 
+    public DateTime DatePlantation { get; protected set; }
+
     public Plante(string nom, string nature, string saisonOptimale, string typePref, double espacementEntre2, double placeNecessaire,
     double vitessePousse, double eauNecessaire, double lumiereNecessaire, double temperaturePref, string maladiePotentielle,
-    double esperanceVie, double nombreProduction, char visuel, double niveauHumiditePref)
+    double esperanceVie, double nombreProduction, string visuel, double niveauHumiditePref)
     {
         Nom = nom;
         Nature = nature;
@@ -49,6 +51,7 @@ public abstract class Plante
         EstMalade = false;
         Age = 0;
         ProductionActuelle = 0;
+
     }
 
     //méthode qui calcule un coeff de développement en fct du respect des conditions de pousse
@@ -109,6 +112,12 @@ public abstract class Plante
         {
             SanteActuelle -= 5; //Déclin de santé avec l'âge
         }
+
+        // Mise à jour production simple
+        if (Age > 2 && ProductionActuelle < NombreProduction)
+        {
+            ProductionActuelle++;
+        }
     }
 
     //méthode récolter des produits
@@ -134,4 +143,73 @@ public abstract class Plante
             SanteActuelle = Math.Min(SanteActuelle + 15, 100);
         }
     }
+
+
+    public virtual string ObtenirVisuel()
+    {
+        return "🌱"; // Par défaut
+    }
+
+    public override string ToString()
+    {
+        return ObtenirVisuel();
+    }
+
 }
+
+
+public class Tomate : Plante
+{
+    public Tomate() : base(
+        nom: "Tomate",
+        nature: "Consommable",
+        saisonOptimale: "Été",
+        typePref: "Terre meuble",
+        espacementEntre2: 1,
+        placeNecessaire: 1,
+        vitessePousse: 2,
+        eauNecessaire: 1.5,
+        lumiereNecessaire: 80,
+        temperaturePref: 25,
+        maladiePotentielle: "Mildiou",
+        esperanceVie: 12,
+        nombreProduction: 5,
+        visuel: "🍅",
+        niveauHumiditePref: 60)
+    { }
+
+    public override string ObtenirVisuel()
+    {
+        return "🍅"; // Par exemple pour Tomate
+    }
+
+}
+
+public class Rose : Plante
+{
+    public Rose() : base(
+        nom: "Rose",
+        nature: "Ornementale",
+        saisonOptimale: "Printemps",
+        typePref: "Terre fertile",
+        espacementEntre2: 2,
+        placeNecessaire: 1,
+        vitessePousse: 3,
+        eauNecessaire: 1.2,
+        lumiereNecessaire: 70,
+        temperaturePref: 20,
+        maladiePotentielle: "Oïdium",
+        esperanceVie: 24,
+        nombreProduction: 1, // Si elle ne produit qu'une fleur visible
+        visuel: "🌹",
+        niveauHumiditePref: 65)
+    { }
+
+    public override string ObtenirVisuel()
+    {
+        return "🌹";
+    }
+}
+
+
+

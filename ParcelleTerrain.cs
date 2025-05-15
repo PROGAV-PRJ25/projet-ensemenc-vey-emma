@@ -4,7 +4,7 @@ public class ParcelleTerrain
     private Terrain TerrainParent { get; set; } //classe parent
     protected internal Plante? PlanteCourante { get; set; } // Changé de private à protected internal
 
-    // Constructeur
+    // Constructeur 
     public ParcelleTerrain(Terrain terrainParent)
     {
         TerrainParent = terrainParent;
@@ -89,9 +89,9 @@ public class ParcelleTerrain
     }
     
     //voir le visu de la plante
-    public char ObtenirVisuel()
+    public string ObtenirVisuel()
     {
-        return EstVide() || PlanteCourante == null ? '.' : PlanteCourante.Visuel;
+        return EstVide() || PlanteCourante == null ? "." : PlanteCourante.ObtenirVisuel();
     }
     public string ObtenirInfoPlante()//donne les infos
     {

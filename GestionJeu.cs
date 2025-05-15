@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Threading;   //🌱 🥬🪴🌿🌼🌸🥀🍓🧺🍅🟫🌾🌽🍇🍎🥒🍉🌳🍂
 
 public class GestionJeu
 {
-    // Propriétés
+    // Propriétés publiques en lecture seule (sauf visuelCase)
     public Terrain TerrainActuel { get; private set; }
     public string SaisonActuelle { get; private set; }
     public int SemaineActuelle { get; private set; }
@@ -12,6 +12,7 @@ public class GestionJeu
     public Dictionary<string, int> Inventaire { get; private set; }
     public int PointsExperience { get; private set; }
     public string NomJoueur { get; private set; }
+    public string visuelCase="░░";
 
     // Constantes pour les saisons
     private readonly string[] Saisons = { "Printemps", "Ete", "Automne", "Hiver" };
@@ -171,7 +172,7 @@ public class GestionJeu
         // Affiche le titre avec un style plus esthétique
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine("╔═══════════════════════════════════════════════════════════════════════════════╗");
-        Console.WriteLine("║                              🌱 Potager et Cie 🌱                              ║");
+        Console.WriteLine("║                              🌱 Potager et Cie 🌱                             ║");
         Console.WriteLine("╚═══════════════════════════════════════════════════════════════════════════════╝");
         
         // Informations du jeu
@@ -186,7 +187,7 @@ public class GestionJeu
         Console.ForegroundColor = ConsoleColor.White;
         
         // Indique les coordonnées X en haut
-        Console.Write("     ");
+        Console.Write("    ");
         for (int x = 0; x < TerrainActuel.Largeur; x++)
         {
             Console.Write($"{x:D2} ");
@@ -200,7 +201,7 @@ public class GestionJeu
             Console.Write("══");
             if (x < TerrainActuel.Largeur - 1) Console.Write("╤");
         }
-        Console.WriteLine("═╗");
+        Console.WriteLine("╗");
         
         // Affiche la grille du terrain
         for (int y = 0; y < TerrainActuel.Hauteur; y++)
@@ -217,27 +218,30 @@ public class GestionJeu
                 }
                 else
                 {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.Write($"{TerrainActuel.Grille[x, y].ObtenirVisuel()}");  
                     // Définir la couleur selon l'état de santé
-                    double sante = TerrainActuel.Grille[x, y].ObtenirSante();
+                    // double sante = TerrainActuel.Grille[x, y].ObtenirSante();
                     
-                    if (TerrainActuel.Grille[x, y].EstMalade())
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                    }
-                    else if (sante < 30)
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    }
-                    else if (sante < 70)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                    }
+                    // if (TerrainActuel.Grille[x, y].EstMalade())
+                    // {
+                    //     Console.ForegroundColor = ConsoleColor.Red;
+                    // }
+                    // else if (sante < 30)
+                
+                    // {
+                    //     Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    // }
+                    // else if (sante < 70)
+                    // {
+                    //     Console.ForegroundColor = ConsoleColor.Yellow;
+                    // }
+                    // else
+                    // {
+                    //     Console.ForegroundColor = ConsoleColor.Green;
+                    // }
                     
-                    Console.Write($"{TerrainActuel.Grille[x, y].ObtenirVisuel()} ");
+                    // Console.Write($"{TerrainActuel.Grille[x, y].ObtenirVisuel()} ");
                 }
                 
                 if (x < TerrainActuel.Largeur - 1)
@@ -269,7 +273,7 @@ public class GestionJeu
             Console.Write("══");
             if (x < TerrainActuel.Largeur - 1) Console.Write("╧");
         }
-        Console.WriteLine("═╝");
+        Console.WriteLine("╝");
         
         // Légende
         Console.ForegroundColor = ConsoleColor.White;
@@ -387,8 +391,7 @@ public class GestionJeu
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("🌱 Plantation...");
                     Thread.Sleep(500);
-                    Console.WriteLine("🚧 Fonctionnalité à implémenter: sélection de plantes");
-                    Thread.Sleep(1000);
+                    ExecuterActionSurParcelle("Planter");
                     break;
                     
                 case "T": // Avancer le temps
@@ -452,6 +455,41 @@ public class GestionJeu
             
             switch (action)
             {
+                case "Planter":
+                    bool selectionValide = false;
+                    Plante planteChoisie = null;
+                    while (!selectionValide)
+                    {
+                        Console.WriteLine("(R)ose   (T)omate");
+                        Console.Write("Quelle plante voulez-vous planter ? ");
+                        string? planteChoisi = Console.ReadLine()?.ToUpper();
+                        
+                        if (string.IsNullOrEmpty(planteChoisi)) continue;
+
+                        switch (planteChoisi)
+                        {
+                            case "R":
+                                planteChoisie = new Rose(); // suppose que Tomate hérite de Plante
+                                selectionValide = true;
+                                break;
+                            case "T":
+                                planteChoisie = new Tomate(); // suppose que Tomate hérite de Plante
+                                selectionValide = true;
+                                break;
+                            default:
+                                Console.WriteLine("❌ Plante non reconnue.");
+                                break;
+                        }
+                    }
+                    if (planteChoisie != null)
+                    {
+                        bool plantee = PlanterPlante(planteChoisie, x, y); // méthode avec Plante + x + y
+                        message = plantee ? "✅ Plante plantée !" : "❌ Échec de la plantation.";
+                        Console.ForegroundColor = plantee ? ConsoleColor.Green : ConsoleColor.Red;
+                    }
+                    break;
+                    
+
                 case "Arroser":
                     ArroserParcelle(x, y);
                     message = "✅ Parcelle arrosée! 💧";
