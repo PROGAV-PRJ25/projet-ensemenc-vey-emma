@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 
+
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 Console.Title = "Potager et Cie";
 // Augmenter la taille du buffer de la console hauteur à 50lignes ou plus évite les bugs

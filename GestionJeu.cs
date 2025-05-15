@@ -82,8 +82,26 @@ public class GestionJeu
             ChangerSaison();
         }
         
-        // Application de la progression au terrain
+        // Application de la progression des plantes
         TerrainActuel.ProgresserSemaine(SaisonActuelle);
+
+        // Apparition aléatoire d'animaux
+        Random rnd = new Random();
+
+        // Abeille (1 chance sur 6)
+        if (rnd.Next(1, 2) == 1)
+        {
+            var abeille = new Abeille(TerrainActuel, this);
+            abeille.Agir();
+        }
+
+        // Taupe (1 chance sur 6)
+        if (rnd.Next(1, 7) == 1)
+        {
+            var taupe = new Taupe(TerrainActuel, this);
+            taupe.Agir();
+        }
+
     }
     
     // Change la saison actuelle

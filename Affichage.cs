@@ -24,40 +24,45 @@ public static class AffichageTerrain
             Console.SetCursorPosition(2, y + 5);
             for (int x = 0; x < terrain.Largeur; x++)
             {
-                //Détermine la couleur de fond selon le type de terrain
+                // Détermine la couleur de fond selon le type de terrain
                 DefiniCouleurTerrain(terrain.TypeTerrain);
-                
+
                 string visuel = terrain.Grille[x, y].ObtenirVisuel();
-                
-                //Couleurs pour l'état des plantes
-                if (!terrain.Grille[x, y].EstVide())
+
+                // 👇 Affichage priorité animal
+                if (terrain.Grille[x, y].AnimalCourant != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow; // 🐝 visible
+                }
+                else if (!terrain.Grille[x, y].EstVide())
                 {
                     if (terrain.Grille[x, y].EstMalade())
                     {
-                        Console.ForegroundColor = ConsoleColor.Red; //Plante malade
+                        Console.ForegroundColor = ConsoleColor.Red;
                     }
                     else
                     {
                         double sante = terrain.Grille[x, y].ObtenirSante();
                         if (sante > 75)
-                            Console.ForegroundColor = ConsoleColor.Green; //Plante en bonne santé
+                            Console.ForegroundColor = ConsoleColor.Green;
                         else if (sante > 50)
-                            Console.ForegroundColor = ConsoleColor.DarkGreen; //Plante moyenne
+                            Console.ForegroundColor = ConsoleColor.DarkGreen;
                         else if (sante > 25)
-                            Console.ForegroundColor = ConsoleColor.DarkYellow; //Plante faible
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
                         else
-                            Console.ForegroundColor = ConsoleColor.DarkRed; //Plante mourante
+                            Console.ForegroundColor = ConsoleColor.DarkRed;
                     }
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Gray; //Parcelle vide
+                    Console.ForegroundColor = ConsoleColor.Gray; // Parcelle vide
                 }
-                
+
                 Console.Write(visuel + " ");
             }
             Console.ResetColor();
         }
+
         
         //Affiche les informations sur les conditions actuelles
         AfficherConditionsActuelles(terrain);

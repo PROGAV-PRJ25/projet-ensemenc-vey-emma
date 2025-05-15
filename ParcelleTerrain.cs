@@ -3,7 +3,7 @@ public class ParcelleTerrain
 {
     private Terrain TerrainParent { get; set; } //classe parent
     protected internal Plante? PlanteCourante { get; set; } // Changé de private à protected internal
-
+    public Animal? AnimalCourant { get; set; } = null;
     // Constructeur 
     public ParcelleTerrain(Terrain terrainParent)
     {
@@ -88,11 +88,19 @@ public class ParcelleTerrain
         return false;
     }
     
-    //voir le visu de la plante
+    //voir le visu de la plante ou de l'animal
     public string ObtenirVisuel()
     {
-        return EstVide() || PlanteCourante == null ? "." : PlanteCourante.ObtenirVisuel();
+        if (AnimalCourant != null)
+            return AnimalCourant.ObtenirVisuel();
+
+        if (PlanteCourante != null)
+            return PlanteCourante.ObtenirVisuel();
+
+        return "."; // Case vide
     }
+
+
     public string ObtenirInfoPlante()//donne les infos
     {
         if (EstVide() || PlanteCourante == null)
