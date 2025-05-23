@@ -210,20 +210,33 @@ public class Escargot : Animal
         
         //l'escargot réduit la santé des plantes adjacentes de 10%
         var adjacentes = CasesAdjacentes(X, Y);
+        int plantesGrignotees = 0;
         foreach ((int nx, int ny) in adjacentes)
         {
             if (!Terrain.Grille[nx, ny].EstVide())
+        {
+            var parcelle = Terrain.Grille[nx, ny];
+            if (parcelle.PlanteCourante != null)
             {
-                var plante = Terrain.Grille[nx, ny];
-                //il a un accès direct à la plante pour réduire sa santé
-                if (plante.PlanteCourante != null)
-                {
-                    //on simule des dégâts en réduisant la santé
-                    Console.WriteLine($"  🍃 L'escargot grignote la plante en ({nx},{ny})");
-                }
+                
+                double santePrecedente = parcelle.PlanteCourante.SanteActuelle;
+                parcelle.PlanteCourante.SanteActuelle = Math.Max(0, santePrecedente - 10);
+                
+                string nomPlante = parcelle.PlanteCourante.Nom;
+                Console.WriteLine($"  🍃 {nomPlante} en ({nx},{ny}) grignotée ! (Santé: {santePrecedente:F0}% → {parcelle.PlanteCourante.SanteActuelle:F0}%)");
+                plantesGrignotees++;
             }
         }
-        
+        }
+        if (plantesGrignotees == 0)
+        {
+            Console.WriteLine("  😋 Aucune plante à grignoter - L'escargot repart affamé");
+        }
+        else
+        {
+            Console.WriteLine($"🐌 Impact de l'escargot : {plantesGrignotees} plantes endommagées !");
+        }
+    
         Thread.Sleep(800);
         Terrain.Grille[X, Y].AnimalCourant = null; //Disparaît
     }
