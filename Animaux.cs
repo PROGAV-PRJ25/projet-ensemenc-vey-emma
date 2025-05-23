@@ -82,15 +82,21 @@ public class Abeille : Animal
 
     public override void Agir()
     {
+        Console.WriteLine($"\n🐝 - UNE ABEILLE APPARAÎT -");
+        Console.WriteLine($"Position: ({X},{Y})");
+        int rosesPlantees = 0;
         for (int i = 0; i < distanceMax; i++)
         {
-            Console.WriteLine($"Abeille à {X},{Y} => {Terrain.Grille[X, Y].AnimalCourant?.Nom ?? "null"}");
 
             var vides = CasesAdjacentesVides(X, Y);
             if (vides.Count == 0) break;
 
             if (rnd.NextDouble() < 0.4)
+            {
                 Terrain.Grille[X, Y].PlanterPlante(new Rose());
+                rosesPlantees++;
+                Console.WriteLine($"  🌹 Rose plantée en ({X},{Y}) !");
+            }
 
             Terrain.Grille[X, Y].AnimalCourant = null;
             (X, Y) = vides[rnd.Next(vides.Count)];
@@ -102,6 +108,10 @@ public class Abeille : Animal
         }
     }
 
+    
+    Console.WriteLine($"💝 Impact de l'abeille : {rosesPlantees} roses plantées !");
+    Terrain.Grille[X, Y].AnimalCourant = null;
+    Thread.Sleep(1500);
 }
 
 
