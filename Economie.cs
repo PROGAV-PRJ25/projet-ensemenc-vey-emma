@@ -6,7 +6,7 @@ public class Economie
     
     public Economie()
     {
-        ArgentJoueur = 100; // Argent de départ
+        ArgentJoueur = 10; //Argent de départ
         
         PrixVente = new Dictionary<string, int>
         {
