@@ -362,33 +362,47 @@ public class GestionJeu
             Console.Write($"{y:D2} ║");
 
             for (int x = 0; x < TerrainActuel.Largeur; x++)
+        {
+            if (TerrainActuel.Grille[x, y].EstVide())
             {
-                if (TerrainActuel.Grille[x, y].EstVide())
+                // Vérifier s'il y a un animal sur une case vide
+                if (TerrainActuel.Grille[x, y].AnimalCourant != null)
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.Write("░░");
+                    Console.ForegroundColor = ConsoleColor.Yellow; // Couleur vive pour les animaux
+                    Console.Write($"{TerrainActuel.Grille[x, y].AnimalCourant.ObtenirVisuel()}");
                 }
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                    
-                    //Définir la couleur selon l'état de santé
+                    Console.Write("░░");
+                }
+            }
+            else
+            {
+                // Priorité aux animaux même sur une plante
+                if (TerrainActuel.Grille[x, y].AnimalCourant != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan; // Couleur spéciale animal sur plante
+                    Console.Write($"{TerrainActuel.Grille[x, y].AnimalCourant.ObtenirVisuel()}");
+                }
+                else
+                {
+                    // Code existant pour les plantes...
                     double sante = TerrainActuel.Grille[x, y].ObtenirSante();
-
+                    
                     if (TerrainActuel.Grille[x, y].EstMalade())
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                     }
-                    else if (sante > 70)
-
+                    else if (sante > 75)
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                     }
-                    else if (sante >50)
+                    else if (sante > 50)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
                     }
-                    else if (sante >25)
+                    else if (sante > 25)
                     {
                         Console.ForegroundColor = ConsoleColor.DarkYellow;
                     }
@@ -399,12 +413,14 @@ public class GestionJeu
 
                     Console.Write($"{TerrainActuel.Grille[x, y].ObtenirVisuel()}");
                 }
+            }
+            
+            if (x < TerrainActuel.Largeur - 1)
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("│");
+            }
 
-                if (x < TerrainActuel.Largeur - 1)
-                {
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write("│");
-                }
             }
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("║");
