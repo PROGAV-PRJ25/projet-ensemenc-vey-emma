@@ -34,9 +34,9 @@ public static class AffichageTerrain
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow; // 🐝 visible
                 }
-                else if (!terrain.Grille[x, y].EstVide())
+                else if (!terrain.Grille[x, y].VerifierEstVide())
                 {
-                    if (terrain.Grille[x, y].EstMalade())
+                    if (terrain.Grille[x, y].VerifierEstMalade())
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                     }
@@ -62,7 +62,6 @@ public static class AffichageTerrain
             }
             Console.ResetColor();
         }
-
         
         //Affiche les informations sur les conditions actuelles
         AfficherConditionsActuelles(terrain);

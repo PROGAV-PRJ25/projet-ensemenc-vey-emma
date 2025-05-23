@@ -11,14 +11,14 @@ public class ParcelleTerrain
         PlanteCourante = null; // initialise les parcelles à vide
     }
 
-    public bool EstVide() // doit être ici, en dehors du constructeur
+    public bool VerifierEstVide() // doit être ici, en dehors du constructeur
     {
         return PlanteCourante == null;
     }
     
     public bool PlanterPlante(Plante plante)//plante une plante
     {
-        if (EstVide())
+        if (VerifierEstVide())
         {
             PlanteCourante = plante;
             return true;
@@ -29,7 +29,7 @@ public class ParcelleTerrain
     //fct pour avancer dans le temps et faire progresser la parcelle d'une semaine
     public void ProgresserSemaine(string typeTerrain, double niveauHumidite, double niveauSoleil, double temperature, double espaceDisponible)
     {
-        if (!EstVide() && PlanteCourante != null)
+        if (!VerifierEstVide() && PlanteCourante != null)
         {
             PlanteCourante.Progresser(typeTerrain, niveauHumidite, niveauSoleil, temperature, espaceDisponible);
         }
@@ -38,21 +38,21 @@ public class ParcelleTerrain
     //avoir le score santé d'une plante entre 0 et 100
     public double ObtenirSante()
     {
-        return EstVide() || PlanteCourante == null ? 0 : PlanteCourante.SanteActuelle;
+        return VerifierEstVide() || PlanteCourante == null ? 0 : PlanteCourante.SanteActuelle;
     }
     public double ObtenirTaille()//permet d'avoir la taille de la plante
     {
-        return EstVide() || PlanteCourante == null ? 0 : PlanteCourante.TailleActuelle;
+        return VerifierEstVide() || PlanteCourante == null ? 0 : PlanteCourante.TailleActuelle;
     }
-    public bool EstMalade() //si la plante est malade 
+    public bool VerifierEstMalade() //si la plante est malade 
     {
-        return !EstVide() && PlanteCourante != null && PlanteCourante.EstMalade;
+        return !VerifierEstVide() && PlanteCourante != null && PlanteCourante.VerifierEstMalade;
     }
 
     //arrosage
     public void Arroser()
     {
-        if (!EstVide() && PlanteCourante != null)
+        if (!VerifierEstVide() && PlanteCourante != null)
         {
             PlanteCourante.Arroser();
         }
@@ -61,7 +61,7 @@ public class ParcelleTerrain
     //Soigner la plante
     public void Soigner()
     {
-        if (!EstVide() && PlanteCourante != null)
+        if (!VerifierEstVide() && PlanteCourante != null)
         {
             PlanteCourante.Soigner();
         }
@@ -70,7 +70,7 @@ public class ParcelleTerrain
     //Récolter les produits de la plante si fruits légumes par ex
     public int Recolter()
     {
-        if (!EstVide() && PlanteCourante != null)
+        if (!VerifierEstVide() && PlanteCourante != null)
         {
             return PlanteCourante.Recolter();
         }
@@ -80,7 +80,7 @@ public class ParcelleTerrain
     //désherbe
     public bool EnleverPlante()
     {
-        if (!EstVide())
+        if (!VerifierEstVide())
         {
             PlanteCourante = null;
             return true;
@@ -103,20 +103,20 @@ public class ParcelleTerrain
 
     public string ObtenirInfoPlante()//donne les infos
     {
-        if (EstVide() || PlanteCourante == null)
+        if (VerifierEstVide() || PlanteCourante == null)
             return "Parcelle vide";
             
         return $"{PlanteCourante.Nom} - Santé: {PlanteCourante.SanteActuelle}% - Taille: {PlanteCourante.TailleActuelle}cm" + 
-               (PlanteCourante.EstMalade ? " (Malade)" : "") + 
+               (PlanteCourante.VerifierEstMalade ? " (Malade)" : "") + 
                $" - Production: {PlanteCourante.ProductionActuelle}/{PlanteCourante.NombreProduction}";
     }
     
     // Nouvelle méthode pour infecter une plante
     public void Infecter()
     {
-        if (!EstVide() && PlanteCourante != null)
+        if (!VerifierEstVide() && PlanteCourante != null)
         {
-            PlanteCourante.EstMalade = true;
+            PlanteCourante.VerifierEstMalade = true;
         }
     }
 }

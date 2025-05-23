@@ -181,7 +181,7 @@ public class GestionJeu
         {
             //nom de la plante pour la vente
             string nomPlante = "Produit"; //défau
-            if (!TerrainActuel.Grille[x, y].EstVide())
+            if (!TerrainActuel.Grille[x, y].VerifierEstVide())
             {
                 nomPlante = TerrainActuel.Grille[x, y].PlanteCourante?.Nom ?? "Produit";
             }
@@ -380,7 +380,7 @@ public class GestionJeu
 
             for (int x = 0; x < TerrainActuel.Largeur; x++)
             {
-                if (TerrainActuel.Grille[x, y].EstVide())
+                if (TerrainActuel.Grille[x, y].VerifierEstVide())
                 {
                     // Vérifier s'il y a un animal sur une case vide
                     if (TerrainActuel.Grille[x, y].AnimalCourant != null)
@@ -407,7 +407,7 @@ public class GestionJeu
                         // Code existant pour les plantes...
                         double sante = TerrainActuel.Grille[x, y].ObtenirSante();
 
-                        if (TerrainActuel.Grille[x, y].EstMalade())
+                        if (TerrainActuel.Grille[x, y].VerifierEstMalade())
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
                         }

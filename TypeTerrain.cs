@@ -67,7 +67,7 @@ public class TerrainMarecageux : Terrain
         int x = new Random().Next(0, Largeur);
         int y = new Random().Next(0, Hauteur);
         
-        if (!Grille[x, y].EstVide() && !Grille[x, y].EstMalade())//on vérifie qu'il y a une plante et qu'elle est saine
+        if (!Grille[x, y].VerifierEstVide() && !Grille[x, y].VerifierEstMalade())//on vérifie qu'il y a une plante et qu'elle est saine
         {
             //Infecter la plante
             Grille[x, y].Infecter(); 
@@ -91,7 +91,7 @@ public class TerrainMarecageux : Terrain
             int ny = y + dy[i];
             if (nx >= 0 && nx < Largeur && ny >= 0 && ny < Hauteur)//valide dans la grille
             {
-                if (!Grille[nx, ny].EstVide() && !Grille[nx, ny].EstMalade())//si il y a une plante et saine
+                if (!Grille[nx, ny].VerifierEstVide() && !Grille[nx, ny].VerifierEstMalade())//si il y a une plante et saine
                 {
                     if (new Random().NextDouble() < probabilite)//proba de contamination
                     {

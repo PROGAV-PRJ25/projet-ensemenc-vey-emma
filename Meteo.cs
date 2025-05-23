@@ -56,7 +56,7 @@ public static class Meteo
                 {
                     for (int j = 0; j < terrain.Hauteur; j++)
                     {
-                        if (!terrain.Grille[i, j].EstVide() && rnd.NextDouble() < 0.3)
+                        if (!terrain.Grille[i, j].VerifierEstVide() && rnd.NextDouble() < 0.3)
                         {
                             // Simuler des dégâts de grêle
                             Console.WriteLine($"💥 Plante en ({i},{j}) endommagée par la grêle !");
