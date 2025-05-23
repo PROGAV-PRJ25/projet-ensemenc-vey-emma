@@ -102,7 +102,7 @@ public class Abeille : Animal
             (X, Y) = vides[rnd.Next(vides.Count)];
             Terrain.Grille[X, Y].AnimalCourant = this;
 
-            // Affichage beau terrain
+            //Affichage beau terrain
             Jeu.AfficherTerrainConsole();
             Thread.Sleep(400);
         }
@@ -126,20 +126,34 @@ public class Taupe : Animal
 
     public override void Agir()
     {
+        Console.WriteLine($"\n🕳️ -UNE TAUPE APPARAÎT-");
+        Console.WriteLine($"Position: ({X},{Y}) - Attention c'est un danger pour les cultures !");
+        bool degats = false;
         var autour = CasesAdjacentes(X, Y);
         foreach ((int nx, int ny) in autour)
         {
             if (!Terrain.Grille[nx, ny].EstVide())
             {
+                string nomPlante = Terrain.Grille[nx, ny].PlanteCourante?.Nom ?? "Plante";
                 Terrain.Grille[nx, ny].EnleverPlante();
-                Terrain.Grille[X, Y].AnimalCourant = null;
-                return;
+                Console.WriteLine($"  💥 {nomPlante} détruite en ({nx},{ny}) !");
+                degats = true;
+                break;
             }
         }
 
+        if (!degats)
+        {
+            Console.WriteLine("  🎯 Aucune plante à proximité - La taupe repart bredouille");
+        }
+        else
+        {
+            Console.WriteLine("💀 Impact de la taupe : 1 plante détruite !");
+        }
+
         Terrain.Grille[X, Y].AnimalCourant = null;
-    }
-}
+        Thread.Sleep(2000);
+    } }
 
 public class Coccinelle : Animal
 {
@@ -153,8 +167,9 @@ public class Coccinelle : Animal
     public override void Agir()
     {
         Console.WriteLine($"🐞 Une coccinelle apparaît en ({X},{Y}) et soigne les plantes malades !");
-        
-        // Soigne toutes les plantes malades dans un rayon de 2 cases
+        int plantesSoignees = 0;
+
+        //la cocci soigne toutes les plantes malades dans un rayon de 2 cases
         for (int i = Math.Max(0, X - 2); i <= Math.Min(Terrain.Largeur - 1, X + 2); i++)
         {
             for (int j = Math.Max(0, Y - 2); j <= Math.Min(Terrain.Hauteur - 1, Y + 2); j++)
@@ -166,18 +181,17 @@ public class Coccinelle : Animal
                 }
             }
         }
-        
-        // Se déplace vers une nouvelle position
-        var vides = CasesAdjacentesVides(X, Y);
-        if (vides.Count > 0)
+        if (plantesSoignees == 0)
         {
-            Terrain.Grille[X, Y].AnimalCourant = null;
-            (X, Y) = vides[rnd.Next(vides.Count)];
-            Terrain.Grille[X, Y].AnimalCourant = this;
+            Console.WriteLine("  ✅ Aucune plante malade trouvée - Tout va bien !");
         }
-        
-        Thread.Sleep(1000);
-        Terrain.Grille[X, Y].AnimalCourant = null; // Disparaît après avoir agi
+        else
+        {
+            Console.WriteLine($"💚 Impact de la coccinelle : {plantesSoignees} plantes soignées !");
+        }
+
+        Thread.Sleep(2000);
+        Terrain.Grille[X, Y].AnimalCourant = null;
     }
 }
 
@@ -194,23 +208,23 @@ public class Escargot : Animal
     {
         Console.WriteLine($"🐌 Un escargot apparaît en ({X},{Y}) et grignote les feuilles...");
         
-        // Réduit la santé des plantes adjacentes de 10%
+        //l'escargot réduit la santé des plantes adjacentes de 10%
         var adjacentes = CasesAdjacentes(X, Y);
         foreach ((int nx, int ny) in adjacentes)
         {
             if (!Terrain.Grille[nx, ny].EstVide())
             {
                 var plante = Terrain.Grille[nx, ny];
-                // Accès direct à la plante pour réduire sa santé
+                //il a un accès direct à la plante pour réduire sa santé
                 if (plante.PlanteCourante != null)
                 {
-                    // On simule des dégâts en réduisant la santé
+                    //on simule des dégâts en réduisant la santé
                     Console.WriteLine($"  🍃 L'escargot grignote la plante en ({nx},{ny})");
                 }
             }
         }
         
         Thread.Sleep(800);
-        Terrain.Grille[X, Y].AnimalCourant = null; // Disparaît
+        Terrain.Grille[X, Y].AnimalCourant = null; //Disparaît
     }
 }

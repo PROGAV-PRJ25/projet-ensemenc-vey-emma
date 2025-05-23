@@ -43,6 +43,13 @@ public class GestionJeu
         Inventaire["Rose (graine)"] = 2;
         Inventaire["Tomate (graine)"] = 3;
         Inventaire["Carotte (graine)"] = 2;
+        StatistiquesAnimaux = new Dictionary<string, int>
+        {
+            { "Abeilles", 0 },
+            { "Coccinelles", 0 },
+            { "Escargots", 0 },
+            { "Taupes", 0 }
+        };
     }
 
     //Initialise un nouveau terrain avec les paramètres spécifiés
@@ -102,30 +109,34 @@ public class GestionJeu
         //Apparition aléatoire d'animaux avec nouvelles espèces
         Random rnd = new Random();
 
-        //Abeille (1 chance sur 7)
-        if (rnd.Next(1, 8) == 1)
+        //Abeille (1 chance sur 6)
+        if (rnd.Next(1, 7) == 1)
         {
+            StatistiquesAnimaux["Abeilles"]++;
             var abeille = new Abeille(TerrainActuel, this);
             abeille.Agir();
         }
 
-        //Coccinelle (1 chance sur 10) - bénéfique
-        if (rnd.Next(1, 11) == 1)
+        //Coccinelle (1 chance sur 6) - bénéfique
+        if (rnd.Next(1, 7) == 2)
         {
+            StatistiquesAnimaux["Coccinelle"]++;
             var coccinelle = new Coccinelle(TerrainActuel, this);
             coccinelle.Agir();
         }
 
-        //Escargot (1 chance sur 12)
-        if (rnd.Next(1, 13) == 1)
+        //Escargot (1 chance sur 6)
+        if (rnd.Next(1, 7) == 3)
         {
+            StatistiquesAnimaux["Escargot"]++; 
             var escargot = new Escargot(TerrainActuel, this);
             escargot.Agir();
         }
 
-        //Taupe (1 chance sur 15)
-        if (rnd.Next(1, 16) == 1)
+        //Taupe (1 chance sur 6)
+        if (rnd.Next(1, 7) == 4)
         {
+            StatistiquesAnimaux["Taupe"]++;
             var taupe = new Taupe(TerrainActuel, this);
             taupe.Agir();
         }
@@ -293,6 +304,11 @@ public class GestionJeu
         resume += "═══════════════════════════════════════════════════════════\n";
         resume += TerrainActuel.ObtenirResume();
         resume += "\n🎒 Inventaire:\n";
+        resume += "\n🐾 Statistiques animaux:\n";
+        foreach (var stat in StatistiquesAnimaux)
+        {
+            resume += $"   {GetEmojiAnimal(stat.Key)} {stat.Key}: {stat.Value} apparitions\n";
+        }
 
         if (Inventaire.Count == 0)
         {
@@ -362,64 +378,64 @@ public class GestionJeu
             Console.Write($"{y:D2} ║");
 
             for (int x = 0; x < TerrainActuel.Largeur; x++)
-        {
-            if (TerrainActuel.Grille[x, y].EstVide())
             {
-                // Vérifier s'il y a un animal sur une case vide
-                if (TerrainActuel.Grille[x, y].AnimalCourant != null)
+                if (TerrainActuel.Grille[x, y].EstVide())
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow; // Couleur vive pour les animaux
-                    Console.Write($"{TerrainActuel.Grille[x, y].AnimalCourant.ObtenirVisuel()}");
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.Write("░░");
-                }
-            }
-            else
-            {
-                // Priorité aux animaux même sur une plante
-                if (TerrainActuel.Grille[x, y].AnimalCourant != null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Cyan; // Couleur spéciale animal sur plante
-                    Console.Write($"{TerrainActuel.Grille[x, y].AnimalCourant.ObtenirVisuel()}");
-                }
-                else
-                {
-                    // Code existant pour les plantes...
-                    double sante = TerrainActuel.Grille[x, y].ObtenirSante();
-                    
-                    if (TerrainActuel.Grille[x, y].EstMalade())
+                    // Vérifier s'il y a un animal sur une case vide
+                    if (TerrainActuel.Grille[x, y].AnimalCourant != null)
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                    }
-                    else if (sante > 75)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                    }
-                    else if (sante > 50)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                    }
-                    else if (sante > 25)
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.ForegroundColor = ConsoleColor.Yellow; // Couleur vive pour les animaux
+                        Console.Write($"{TerrainActuel.Grille[x, y].AnimalCourant.ObtenirVisuel()}");
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.Write("░░");
                     }
-
-                    Console.Write($"{TerrainActuel.Grille[x, y].ObtenirVisuel()}");
                 }
-            }
-            
-            if (x < TerrainActuel.Largeur - 1)
-            {
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write("│");
-            }
+                else
+                {
+                    // Priorité aux animaux même sur une plante
+                    if (TerrainActuel.Grille[x, y].AnimalCourant != null)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan; // Couleur spéciale animal sur plante
+                        Console.Write($"{TerrainActuel.Grille[x, y].AnimalCourant.ObtenirVisuel()}");
+                    }
+                    else
+                    {
+                        // Code existant pour les plantes...
+                        double sante = TerrainActuel.Grille[x, y].ObtenirSante();
+
+                        if (TerrainActuel.Grille[x, y].EstMalade())
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                        }
+                        else if (sante > 75)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                        }
+                        else if (sante > 50)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                        }
+                        else if (sante > 25)
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkRed;
+                        }
+
+                        Console.Write($"{TerrainActuel.Grille[x, y].ObtenirVisuel()}");
+                    }
+                }
+
+                if (x < TerrainActuel.Largeur - 1)
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write("│");
+                }
 
             }
             Console.ForegroundColor = ConsoleColor.White;
@@ -648,87 +664,87 @@ public class GestionJeu
             switch (action)
             {
                 case "Planter":
-                bool selectionValide = false;
-                Plante planteChoisie = null;
-                string nomPlanteChoisie = "";
-                
-                while (!selectionValide)
-                {
-                    Console.WriteLine("Plantes disponibles:");
-                    Console.WriteLine("🌹 (R)ose    🍅 (T)omate    🥕 (C)arotte");
-                    Console.WriteLine("🌻 (S)oleil  🌿 (B)asilic");
-                    Console.Write("Quelle plante voulez-vous planter ? ");
-                    string? planteChoisi = Console.ReadLine()?.ToUpper();
-                    
-                    if (string.IsNullOrEmpty(planteChoisi)) continue;
+                    bool selectionValide = false;
+                    Plante planteChoisie = null;
+                    string nomPlanteChoisie = "";
 
-                    switch (planteChoisi)
+                    while (!selectionValide)
                     {
-                        case "R":
-                            nomPlanteChoisie = "Rose";
-                            break;
-                        case "T":
-                            nomPlanteChoisie = "Tomate";
-                            break;
-                        case "C":
-                            nomPlanteChoisie = "Carotte";
-                            break;
-                        case "S":
-                            nomPlanteChoisie = "Tournesol";
-                            break;
-                        case "B":
-                            nomPlanteChoisie = "Basilic";
-                            break;
-                        default:
-                            Console.WriteLine("❌ Plante non reconnue.");
-                            continue;
-                    }
-                    
-                    //Vérifier si on a la graine dans l'inventaire
-                    string nomGraine = nomPlanteChoisie + " (graine)";
-                    if (Inventaire.ContainsKey(nomGraine) && Inventaire[nomGraine] > 0)
-                    {
-                        //On a la graine, on peut planter
-                        planteChoisie = nomPlanteChoisie switch
+                        Console.WriteLine("Plantes disponibles:");
+                        Console.WriteLine("🌹 (R)ose    🍅 (T)omate    🥕 (C)arotte");
+                        Console.WriteLine("🌻 (S)oleil  🌿 (B)asilic");
+                        Console.Write("Quelle plante voulez-vous planter ? ");
+                        string? planteChoisi = Console.ReadLine()?.ToUpper();
+
+                        if (string.IsNullOrEmpty(planteChoisi)) continue;
+
+                        switch (planteChoisi)
                         {
-                            "Rose" => new Rose(),
-                            "Tomate" => new Tomate(),
-                            "Carotte" => new Carotte(),
-                            "Tournesol" => new Tournesol(),
-                            "Basilic" => new Basilic(),
-                            _ => null
-                        };
-                        selectionValide = true;
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"❌ Vous n'avez pas de graine de {nomPlanteChoisie} !");
-                        Console.WriteLine("💡 Rendez-vous au magasin (M) pour acheter des graines.");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Thread.Sleep(2000);
-                        return; //Sortir de la méthode
-                    }
-                }
-                
-                if (planteChoisie != null)
-                {
-                    bool plantee = PlanterPlante(planteChoisie, x, y);
-                    if (plantee)
-                    {
-                        //Consommer la graine de l'inventaire
+                            case "R":
+                                nomPlanteChoisie = "Rose";
+                                break;
+                            case "T":
+                                nomPlanteChoisie = "Tomate";
+                                break;
+                            case "C":
+                                nomPlanteChoisie = "Carotte";
+                                break;
+                            case "S":
+                                nomPlanteChoisie = "Tournesol";
+                                break;
+                            case "B":
+                                nomPlanteChoisie = "Basilic";
+                                break;
+                            default:
+                                Console.WriteLine("❌ Plante non reconnue.");
+                                continue;
+                        }
+
+                        //Vérifier si on a la graine dans l'inventaire
                         string nomGraine = nomPlanteChoisie + " (graine)";
-                        Inventaire[nomGraine]--;
-                        message = $"✅ {nomPlanteChoisie} plantée ! (Graine consommée)";
-                        Console.ForegroundColor = ConsoleColor.Green;
+                        if (Inventaire.ContainsKey(nomGraine) && Inventaire[nomGraine] > 0)
+                        {
+                            //On a la graine, on peut planter
+                            planteChoisie = nomPlanteChoisie switch
+                            {
+                                "Rose" => new Rose(),
+                                "Tomate" => new Tomate(),
+                                "Carotte" => new Carotte(),
+                                "Tournesol" => new Tournesol(),
+                                "Basilic" => new Basilic(),
+                                _ => null
+                            };
+                            selectionValide = true;
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"❌ Vous n'avez pas de graine de {nomPlanteChoisie} !");
+                            Console.WriteLine("💡 Rendez-vous au magasin (M) pour acheter des graines.");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Thread.Sleep(2000);
+                            return; //Sortir de la méthode
+                        }
                     }
-                    else
+
+                    if (planteChoisie != null)
                     {
-                        message = "❌ Échec de la plantation.";
-                        Console.ForegroundColor = ConsoleColor.Red;
+                        bool plantee = PlanterPlante(planteChoisie, x, y);
+                        if (plantee)
+                        {
+                            //Consommer la graine de l'inventaire
+                            string nomGraine = nomPlanteChoisie + " (graine)";
+                            Inventaire[nomGraine]--;
+                            message = $"✅ {nomPlanteChoisie} plantée ! (Graine consommée)";
+                            Console.ForegroundColor = ConsoleColor.Green;
+                        }
+                        else
+                        {
+                            message = "❌ Échec de la plantation.";
+                            Console.ForegroundColor = ConsoleColor.Red;
+                        }
                     }
-                }
-                break;
+                    break;
 
 
                 case "Arroser":
@@ -796,7 +812,7 @@ public class GestionJeu
             _ => "☁️"
         };
     }
-    
+
     private string GetEmojiPlante(string nom)
     {
         return nom switch
@@ -807,6 +823,17 @@ public class GestionJeu
             "Tournesol" => "🌻",
             "Basilic" => "🌿",
             _ => "🌱"
+        };
+    }
+    private string GetEmojiAnimal(string nom)
+    {
+        return nom switch
+        {
+            "Abeilles" => "🐝",
+            "Coccinelles" => "🐞",
+            "Escargots" => "🐌",
+            "Taupes" => "🕳️",
+            _ => "🐾"
         };
     }
 }
