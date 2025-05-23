@@ -1,3 +1,0 @@
-Initialiser Terrain => mettre le type de terrain comme un choix pour le joueur et mettre en défaut terre
- + créer classe terrainTerre
-
