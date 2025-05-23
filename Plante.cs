@@ -18,7 +18,7 @@ public abstract class Plante
     
     //paramètres d'état descriptifs
     public double TailleActuelle { get; protected set; } //taille actuelle en cm
-    public double SanteActuelle { get; protected set; } //pourcentage de santé entre 0 et 100
+    public double SanteActuelle { get; set; } //pourcentage de santé entre 0 et 100
     public bool EstMalade { get; set; } //indique si la plante est malade - changé de protected set à public set
     public int Age { get; protected set; } //âge en semaines
     public int ProductionActuelle { get; protected set; } //nombre de fruits/fleurs actuellement produits
