@@ -17,6 +17,7 @@ public class GestionJeu
     //pour les saisons et intemperies
     public Economie Economie { get; private set; }
     private Meteo.TypeIntemperie derniereIntemperie = Meteo.TypeIntemperie.Normale;
+    public Dictionary<string, int> StatistiquesAnimaux { get; private set; }
 
     private readonly string[] Saisons = { "Printemps", "Ete", "Automne", "Hiver" };
     private readonly int SemainesParSaison = 13; //~3 mois
@@ -120,7 +121,7 @@ public class GestionJeu
         //Coccinelle (1 chance sur 6) - bénéfique
         if (rnd.Next(1, 7) == 2)
         {
-            StatistiquesAnimaux["Coccinelle"]++;
+            StatistiquesAnimaux["Coccinelles"]++;
             var coccinelle = new Coccinelle(TerrainActuel, this);
             coccinelle.Agir();
         }
@@ -128,7 +129,7 @@ public class GestionJeu
         //Escargot (1 chance sur 6)
         if (rnd.Next(1, 7) == 3)
         {
-            StatistiquesAnimaux["Escargot"]++; 
+            StatistiquesAnimaux["Escargots"]++; 
             var escargot = new Escargot(TerrainActuel, this);
             escargot.Agir();
         }
@@ -136,7 +137,7 @@ public class GestionJeu
         //Taupe (1 chance sur 6)
         if (rnd.Next(1, 7) == 4)
         {
-            StatistiquesAnimaux["Taupe"]++;
+            StatistiquesAnimaux["Taupes"]++;
             var taupe = new Taupe(TerrainActuel, this);
             taupe.Agir();
         }
@@ -304,11 +305,7 @@ public class GestionJeu
         resume += "═══════════════════════════════════════════════════════════\n";
         resume += TerrainActuel.ObtenirResume();
         resume += "\n🎒 Inventaire:\n";
-        resume += "\n🐾 Statistiques animaux:\n";
-        foreach (var stat in StatistiquesAnimaux)
-        {
-            resume += $"   {GetEmojiAnimal(stat.Key)} {stat.Key}: {stat.Value} apparitions\n";
-        }
+        
 
         if (Inventaire.Count == 0)
         {
@@ -321,7 +318,11 @@ public class GestionJeu
                 resume += $"   📦 {item.Key}: {item.Value}\n";
             }
         }
-
+        resume += "\n🐾 Statistiques animaux:\n";
+        foreach (var stat in StatistiquesAnimaux)
+        {
+            resume += $"   {GetEmojiAnimal(stat.Key)} {stat.Key}: {stat.Value} apparitions\n";
+        }
         resume += $"\n⭐ Expérience: {PointsExperience} points\n";
         resume += $"💰 Argent: {Economie.ArgentJoueur}€\n";
 

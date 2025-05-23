@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 public abstract class Animal
 {
@@ -106,14 +107,14 @@ public class Abeille : Animal
             Jeu.AfficherTerrainConsole();
             Thread.Sleep(400);
         }
+
+
+
+        Console.WriteLine($"💝 Impact de l'abeille : {rosesPlantees} roses plantées !");
+        Terrain.Grille[X, Y].AnimalCourant = null;
+        Thread.Sleep(1500);
     }
-
-    
-    Console.WriteLine($"💝 Impact de l'abeille : {rosesPlantees} roses plantées !");
-    Terrain.Grille[X, Y].AnimalCourant = null;
-    Thread.Sleep(1500);
 }
-
 
 public class Taupe : Animal
 {
