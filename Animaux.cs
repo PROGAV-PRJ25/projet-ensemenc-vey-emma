@@ -30,7 +30,7 @@ public abstract class Animal
 
     public abstract void Agir();
 
-    protected List<(int, int)> VerifierCasesAdjacentes(int x, int y)
+    protected List<(int, int)> CasesAdjacentes(int x, int y)
     {
         var adj = new List<(int, int)>();
         for (int dx = -1; dx <= 1; dx++)
@@ -47,19 +47,19 @@ public abstract class Animal
         return adj;
     }
 
-    protected List<(int, int)> VerifierVerifierCasesAdjacentesVides(int x, int y)
+    protected List<(int, int)> CasesAdjacentesVides(int x, int y)
     {
-        return VerifierCasesAdjacentes(x, y)
-            .Where(p => Terrain.Grille[p.Item1, p.Item2].VerifierEstVide() && Terrain.Grille[p.Item1, p.Item2].AnimalCourant == null)
+        return CasesAdjacentes(x, y)
+            .Where(p => Terrain.Grille[p.Item1, p.Item2].EstVide() && Terrain.Grille[p.Item1, p.Item2].AnimalCourant == null)
             .ToList();
     }
 
-    protected (int, int) FairePositionAleatoireVide()
+    protected (int, int) PositionAleatoireVide()
     {
         var vides = new List<(int, int)>();
         for (int i = 0; i < Terrain.Largeur; i++)
             for (int j = 0; j < Terrain.Hauteur; j++)
-                if (Terrain.Grille[i, j].VerifierEstVide() && Terrain.Grille[i, j].AnimalCourant == null)
+                if (Terrain.Grille[i, j].EstVide() && Terrain.Grille[i, j].AnimalCourant == null)
                     vides.Add((i, j));
 
         if (vides.Count == 0)
@@ -77,7 +77,7 @@ public class Abeille : Animal
     public Abeille(Terrain terrain, GestionJeu jeu)
         : base("Abeille", "Insecte", "Pollinisateur", "🐝", terrain, jeu)
     {
-        (X, Y) = FairePositionAleatoireVide();
+        (X, Y) = PositionAleatoireVide();
         Terrain.Grille[X, Y].AnimalCourant = this;
     }
 
@@ -89,7 +89,7 @@ public class Abeille : Animal
         for (int i = 0; i < distanceMax; i++)
         {
 
-            var vides = VerifierVerifierCasesAdjacentesVides(X, Y);
+            var vides = CasesAdjacentesVides(X, Y);
             if (vides.Count == 0) break;
 
             if (rnd.NextDouble() < 0.4)
@@ -121,7 +121,7 @@ public class Taupe : Animal
     public Taupe(Terrain terrain, GestionJeu jeu)
         : base("Taupe", "Fouisseur", "Mangeuse", "🕳️", terrain, jeu)
     {
-        (X, Y) = FairePositionAleatoireVide();
+        (X, Y) = PositionAleatoireVide();
         Terrain.Grille[X, Y].AnimalCourant = this;
     }
 
@@ -129,11 +129,13 @@ public class Taupe : Animal
     {
         Console.WriteLine($"\n🕳️ -UNE TAUPE APPARAÎT-");
         Console.WriteLine($"Position: ({X},{Y}) - Attention c'est un danger pour les cultures !");
+        Jeu.AfficherTerrainConsole();
+        Thread.Sleep(2000); 
         bool degats = false;
-        var autour = VerifierCasesAdjacentes(X, Y);
+        var autour = CasesAdjacentes(X, Y);
         foreach ((int nx, int ny) in autour)
         {
-            if (!Terrain.Grille[nx, ny].VerifierEstVide())
+            if (!Terrain.Grille[nx, ny].EstVide())
             {
                 string nomPlante = Terrain.Grille[nx, ny].PlanteCourante?.Nom ?? "Plante";
                 Terrain.Grille[nx, ny].EnleverPlante();
@@ -161,13 +163,15 @@ public class Coccinelle : Animal
     public Coccinelle(Terrain terrain, GestionJeu jeu)
         : base("Coccinelle", "Insecte", "Protecteur", "🐞", terrain, jeu)
     {
-        (X, Y) = FairePositionAleatoireVide();
+        (X, Y) = PositionAleatoireVide();
         Terrain.Grille[X, Y].AnimalCourant = this;
     }
 
     public override void Agir()
     {
         Console.WriteLine($"🐞 Une coccinelle apparaît en ({X},{Y}) et soigne les plantes malades !");
+        Jeu.AfficherTerrainConsole();
+        Thread.Sleep(2000); 
         int plantesSoignees = 0;
 
         //la cocci soigne toutes les plantes malades dans un rayon de 2 cases
@@ -175,7 +179,7 @@ public class Coccinelle : Animal
         {
             for (int j = Math.Max(0, Y - 2); j <= Math.Min(Terrain.Hauteur - 1, Y + 2); j++)
             {
-                if (!Terrain.Grille[i, j].VerifierEstVide() && Terrain.Grille[i, j].VerifierEstMalade())
+                if (!Terrain.Grille[i, j].EstVide() && Terrain.Grille[i, j].EstMalade())
                 {
                     Terrain.Grille[i, j].Soigner();
                     Console.WriteLine($"  ✨ Plante en ({i},{j}) soignée !");
@@ -201,20 +205,21 @@ public class Escargot : Animal
     public Escargot(Terrain terrain, GestionJeu jeu)
         : base("Escargot", "Mollusque", "Grignoteur", "🐌", terrain, jeu)
     {
-        (X, Y) = FairePositionAleatoireVide();
+        (X, Y) = PositionAleatoireVide();
         Terrain.Grille[X, Y].AnimalCourant = this;
     }
 
     public override void Agir()
     {
         Console.WriteLine($"🐌 Un escargot apparaît en ({X},{Y}) et grignote les feuilles...");
-        
+        Jeu.AfficherTerrainConsole();
+        Thread.Sleep(2000);
         //l'escargot réduit la santé des plantes adjacentes de 10%
-        var adjacentes = VerifierCasesAdjacentes(X, Y);
+        var adjacentes = CasesAdjacentes(X, Y);
         int plantesGrignotees = 0;
         foreach ((int nx, int ny) in adjacentes)
         {
-            if (!Terrain.Grille[nx, ny].VerifierEstVide())
+            if (!Terrain.Grille[nx, ny].EstVide())
         {
             var parcelle = Terrain.Grille[nx, ny];
             if (parcelle.PlanteCourante != null)
