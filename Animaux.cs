@@ -105,14 +105,14 @@ public class Abeille : Animal
 
             //Affichage beau terrain
             Jeu.AfficherTerrainConsole();
-            Thread.Sleep(400);
+            Thread.Sleep(1500);
         }
 
 
 
         Console.WriteLine($"💝 Impact de l'abeille : {rosesPlantees} roses plantées !");
         Terrain.Grille[X, Y].AnimalCourant = null;
-        Thread.Sleep(1500);
+        Thread.Sleep(4000);
     }
 }
 
@@ -153,7 +153,7 @@ public class Taupe : Animal
         }
 
         Terrain.Grille[X, Y].AnimalCourant = null;
-        Thread.Sleep(2000);
+        Thread.Sleep(4000);
     } }
 
 public class Coccinelle : Animal
@@ -191,7 +191,7 @@ public class Coccinelle : Animal
             Console.WriteLine($"💚 Impact de la coccinelle : {plantesSoignees} plantes soignées !");
         }
 
-        Thread.Sleep(2000);
+        Thread.Sleep(4000);
         Terrain.Grille[X, Y].AnimalCourant = null;
     }
 }
@@ -238,7 +238,7 @@ public class Escargot : Animal
             Console.WriteLine($"🐌 Impact de l'escargot : {plantesGrignotees} plantes endommagées !");
         }
     
-        Thread.Sleep(800);
+        Thread.Sleep(4000);
         Terrain.Grille[X, Y].AnimalCourant = null; //Disparaît
     }
 }
