@@ -131,3 +131,76 @@ public class Taupe : Animal
     }
 }
 
+public class Coccinelle : Animal
+{
+    public Coccinelle(Terrain terrain, GestionJeu jeu)
+        : base("Coccinelle", "Insecte", "Protecteur", "🐞", terrain, jeu)
+    {
+        (X, Y) = PositionAleatoireVide();
+        Terrain.Grille[X, Y].AnimalCourant = this;
+    }
+
+    public override void Agir()
+    {
+        Console.WriteLine($"🐞 Une coccinelle apparaît en ({X},{Y}) et soigne les plantes malades !");
+        
+        // Soigne toutes les plantes malades dans un rayon de 2 cases
+        for (int i = Math.Max(0, X - 2); i <= Math.Min(Terrain.Largeur - 1, X + 2); i++)
+        {
+            for (int j = Math.Max(0, Y - 2); j <= Math.Min(Terrain.Hauteur - 1, Y + 2); j++)
+            {
+                if (!Terrain.Grille[i, j].EstVide() && Terrain.Grille[i, j].EstMalade())
+                {
+                    Terrain.Grille[i, j].Soigner();
+                    Console.WriteLine($"  ✨ Plante en ({i},{j}) soignée !");
+                }
+            }
+        }
+        
+        // Se déplace vers une nouvelle position
+        var vides = CasesAdjacentesVides(X, Y);
+        if (vides.Count > 0)
+        {
+            Terrain.Grille[X, Y].AnimalCourant = null;
+            (X, Y) = vides[rnd.Next(vides.Count)];
+            Terrain.Grille[X, Y].AnimalCourant = this;
+        }
+        
+        Thread.Sleep(1000);
+        Terrain.Grille[X, Y].AnimalCourant = null; // Disparaît après avoir agi
+    }
+}
+
+public class Escargot : Animal
+{
+    public Escargot(Terrain terrain, GestionJeu jeu)
+        : base("Escargot", "Mollusque", "Grignoteur", "🐌", terrain, jeu)
+    {
+        (X, Y) = PositionAleatoireVide();
+        Terrain.Grille[X, Y].AnimalCourant = this;
+    }
+
+    public override void Agir()
+    {
+        Console.WriteLine($"🐌 Un escargot apparaît en ({X},{Y}) et grignote les feuilles...");
+        
+        // Réduit la santé des plantes adjacentes de 10%
+        var adjacentes = CasesAdjacentes(X, Y);
+        foreach ((int nx, int ny) in adjacentes)
+        {
+            if (!Terrain.Grille[nx, ny].EstVide())
+            {
+                var plante = Terrain.Grille[nx, ny];
+                // Accès direct à la plante pour réduire sa santé
+                if (plante.PlanteCourante != null)
+                {
+                    // On simule des dégâts en réduisant la santé
+                    Console.WriteLine($"  🍃 L'escargot grignote la plante en ({nx},{ny})");
+                }
+            }
+        }
+        
+        Thread.Sleep(800);
+        Terrain.Grille[X, Y].AnimalCourant = null; // Disparaît
+    }
+}

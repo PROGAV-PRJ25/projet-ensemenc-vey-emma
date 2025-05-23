@@ -4,7 +4,7 @@ using System.Threading;   //🌱 🥬🪴🌿🌼🌸🥀🍓🧺🍅🟫🌾�
 
 public class GestionJeu
 {
-    // Propriétés publiques en lecture seule (sauf visuelCase)
+    //Propriétés publiques en lecture seule (sauf visuelCase)
     public Terrain TerrainActuel { get; private set; }
     public string SaisonActuelle { get; private set; }
     public int SemaineActuelle { get; private set; }
@@ -12,13 +12,16 @@ public class GestionJeu
     public Dictionary<string, int> Inventaire { get; private set; }
     public int PointsExperience { get; private set; }
     public string NomJoueur { get; private set; }
-    public string visuelCase="░░";
+    public string visuelCase = "░░";
 
-    // Constantes pour les saisons
+    //pour les saisons et intemperies
+    public Economie Economie { get; private set; }
+    private Meteo.TypeIntemperie derniereIntemperie = Meteo.TypeIntemperie.Normale;
+
     private readonly string[] Saisons = { "Printemps", "Ete", "Automne", "Hiver" };
-    private readonly int SemainesParSaison = 13; // ~3 mois
-    
-    // Constructeur
+    private readonly int SemainesParSaison = 13; //~3 mois
+
+    //Constructeur
     public GestionJeu(string nomJoueur)
     {
         NomJoueur = nomJoueur;
@@ -26,25 +29,29 @@ public class GestionJeu
         PointsExperience = 0;
         SemaineActuelle = 1;
         AnneeActuelle = 1;
-        SaisonActuelle = "Printemps"; // On commence au printemps
-        
-        // Initialisation par défaut avec un terrain de taille moyenne
+        SaisonActuelle = "Printemps"; //On commence au printemps
+        //Initialisation de l'économie
+        Economie = new Economie();
+        //Initialisation par défaut avec un terrain de taille moyenne
         InitialiserTerrain("Mon Potager", "Centre", "Terre", 10, 5);
-        
-        // Garantir que TerrainActuel n'est jamais null
+
+        //Garantir que TerrainActuel n'est jamais null
         if (TerrainActuel == null)
         {
             TerrainActuel = new TerrainArgileux("Mon Potager", "Centre", 0.05, 10, 5);
         }
+        Inventaire["Rose (graine)"] = 2;
+        Inventaire["Tomate (graine)"] = 3;
+        Inventaire["Carotte (graine)"] = 2;
     }
-    
-    // Initialise un nouveau terrain avec les paramètres spécifiés
+
+    //Initialise un nouveau terrain avec les paramètres spécifiés
     public void InitialiserTerrain(string nom, string region, string typeTerrain, int largeur, int hauteur)
     {
         switch (typeTerrain.ToLower())
         {
             case "sable":
-                TerrainActuel = new TerrainSable(nom, region, largeur * hauteur * 0.01, largeur, hauteur); // 0.01 hectare par parcelle
+                TerrainActuel = new TerrainSable(nom, region, largeur * hauteur * 0.01, largeur, hauteur); //0.01 hectare par parcelle
                 break;
             case "argile":
                 TerrainActuel = new TerrainArgileux(nom, region, largeur * hauteur * 0.01, largeur, hauteur);
@@ -54,117 +61,239 @@ public class GestionJeu
                 TerrainActuel = new TerrainMarecageux(nom, region, largeur * hauteur * 0.01, largeur, hauteur);
                 break;
             default:
-                // Terrain par défaut - on pourrait créer une classe TerrainTerre si nécessaire
+                //Terrain par défaut - on pourrait créer une classe TerrainTerre si nécessaire
                 TerrainActuel = new TerrainArgileux(nom, region, largeur * hauteur * 0.01, largeur, hauteur);
                 break;
         }
     }
-    
-    // Plante une plante à une position spécifique
+
+    //Plante une plante à une position spécifique
     public bool PlanterPlante(Plante plante, int x, int y)
     {
         if (TerrainActuel.PlanterPlante(plante, x, y))
         {
-            PointsExperience += 5; // Gain d'XP pour chaque plantation réussie
+            PointsExperience += 5; //Gain d'XP pour chaque plantation réussie
             return true;
         }
         return false;
     }
-    
-    // Avance le temps d'une semaine
+
+    //Avance le temps d'une semaine
     public void PasserSemaine()
     {
-        // Progression du temps
+        //Progression du temps
         SemaineActuelle++;
         if (SemaineActuelle > SemainesParSaison)
         {
             SemaineActuelle = 1;
             ChangerSaison();
         }
-        
-        // Application de la progression des plantes
+        //Génération et application d'intempérie
+        derniereIntemperie = Meteo.GenererIntemperie(SaisonActuelle);
+        if (derniereIntemperie != Meteo.TypeIntemperie.Normale)
+        {
+            Console.WriteLine("\n🌤️ === BULLETIN MÉTÉO ===");
+            Meteo.AppliquerIntemperie(TerrainActuel, derniereIntemperie);
+            Thread.Sleep(2000);
+        }
+        //Application de la progression des plantes
         TerrainActuel.ProgresserSemaine(SaisonActuelle);
 
-        // Apparition aléatoire d'animaux
+        //Apparition aléatoire d'animaux avec nouvelles espèces
         Random rnd = new Random();
 
-        // Abeille (1 chance sur 6)
-        if (rnd.Next(1, 2) == 1)
+        //Abeille (1 chance sur 7)
+        if (rnd.Next(1, 8) == 1)
         {
             var abeille = new Abeille(TerrainActuel, this);
             abeille.Agir();
         }
 
-        // Taupe (1 chance sur 6)
-        if (rnd.Next(1, 7) == 1)
+        //Coccinelle (1 chance sur 10) - bénéfique
+        if (rnd.Next(1, 11) == 1)
+        {
+            var coccinelle = new Coccinelle(TerrainActuel, this);
+            coccinelle.Agir();
+        }
+
+        //Escargot (1 chance sur 12)
+        if (rnd.Next(1, 13) == 1)
+        {
+            var escargot = new Escargot(TerrainActuel, this);
+            escargot.Agir();
+        }
+
+        //Taupe (1 chance sur 15)
+        if (rnd.Next(1, 16) == 1)
         {
             var taupe = new Taupe(TerrainActuel, this);
             taupe.Agir();
         }
-
     }
-    
-    // Change la saison actuelle
+
+    //Change la saison actuelle
     private void ChangerSaison()
     {
         int indexActuel = Array.IndexOf(Saisons, SaisonActuelle);
         indexActuel = (indexActuel + 1) % Saisons.Length;
         SaisonActuelle = Saisons[indexActuel];
-        
-        // Si on revient au printemps, nouvelle année
+
+        //Si on revient au printemps, nouvelle année
         if (indexActuel == 0)
         {
             AnneeActuelle++;
         }
     }
-    
-    // Actions sur les parcelles
-    
-    // Arrose une parcelle
+
+    //Actions sur les parcelles
+
+    //Arrose une parcelle
     public void ArroserParcelle(int x, int y)
     {
         TerrainActuel.ArroserParcelle(x, y);
         PointsExperience += 1;
     }
-    
-    // Soigne une plante malade
+
+    //Soigne une plante malade
     public void SoignerPlante(int x, int y)
     {
         TerrainActuel.SoignerPlante(x, y);
         PointsExperience += 3;
     }
-    
-    // Récolte les produits d'une parcelle
+
+    //Récolte les produits d'une parcelle
     public int RecolterParcelle(int x, int y)
     {
         int recolte = TerrainActuel.RecolterParcelle(x, y);
         if (recolte > 0)
         {
-            // On pourrait ajouter le produit spécifique à l'inventaire ici
-            // Pour simplifier, on ajoute juste un compteur générique
-            if (!Inventaire.ContainsKey("Produits"))
-                Inventaire["Produits"] = 0;
-            
-            Inventaire["Produits"] += recolte;
+            //nom de la plante pour la vente
+            string nomPlante = "Produit"; //défau
+            if (!TerrainActuel.Grille[x, y].EstVide())
+            {
+                nomPlante = TerrainActuel.Grille[x, y].PlanteCourante?.Nom ?? "Produit";
+            }
+
+            //ajout à l'inventaire
+            if (!Inventaire.ContainsKey(nomPlante))
+                Inventaire[nomPlante] = 0;
+
+            Inventaire[nomPlante] += recolte;
             PointsExperience += recolte * 2;
+
+            Console.WriteLine($"💰 Vous avez récolté {recolte} {nomPlante}(s) !");
         }
         return recolte;
     }
-    
-    // Enlève une plante
+
+
+    //Enlève une plante
     public bool EnleverPlante(int x, int y)
     {
         return TerrainActuel.EnleverPlante(x, y);
     }
-    
-    // Renvoie un résumé de l'état du jeu
+    //Nouvelle méthode pour vendre des produits
+    public void VendreProduits()
+    {
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("💰 === VENTE DE PRODUITS ===");
+        Console.WriteLine($"Argent actuel: {Economie.ArgentJoueur}€");
+        Console.WriteLine("\nVotre inventaire:");
+
+        if (Inventaire.Count == 0)
+        {
+            Console.WriteLine("Inventaire vide !");
+            Thread.Sleep(1500);
+            return;
+        }
+
+        foreach (var item in Inventaire)
+        {
+            if (item.Value > 0)
+            {
+                int prixUnitaire = Economie.PrixVente.ContainsKey(item.Key) ? Economie.PrixVente[item.Key] : 2;
+                Console.WriteLine($"{GetEmojiPlante(item.Key)} {item.Key}: {item.Value} unités ({prixUnitaire}€/unité)");
+            }
+        }
+
+        Console.Write("\nQue voulez-vous vendre (nom de la plante) ? ");
+        string? choix = Console.ReadLine();
+
+        if (!string.IsNullOrEmpty(choix) && Inventaire.ContainsKey(choix) && Inventaire[choix] > 0)
+        {
+            Console.Write($"Combien de {choix} voulez-vous vendre ? (max: {Inventaire[choix]}) ");
+            if (int.TryParse(Console.ReadLine(), out int quantite) && quantite > 0 && quantite <= Inventaire[choix])
+            {
+                int gain = Economie.VendreProduit(choix, quantite);
+                Inventaire[choix] -= quantite;
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"✅ Vendu {quantite} {choix}(s) pour {gain}€ !");
+                PointsExperience += gain / 2;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("❌ Quantité invalide !");
+            }
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("❌ Produit non trouvé ou stock épuisé !");
+        }
+
+        Console.ResetColor();
+        Thread.Sleep(2000);
+    }
+
+    //Nouvelle méthode pour le magasin
+    public void AfficherMagasin()
+    {
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("🏪 === MAGASIN ===");
+        Console.WriteLine($"💰 Votre argent: {Economie.ArgentJoueur}€");
+        Console.WriteLine("\n📦 GRAINES DISPONIBLES:");
+
+        foreach (var item in Economie.PrixAchat)
+        {
+            Console.WriteLine($"  {GetEmojiPlante(item.Key)} {item.Key}: {item.Value}€");
+        }
+
+        Console.Write("\nQuelle graine voulez-vous acheter ? (nom complet ou 'q' pour quitter) ");
+        string? choix = Console.ReadLine();
+
+        if (choix?.ToLower() == "q") return;
+
+        if (!string.IsNullOrEmpty(choix) && Economie.AcheterGraine(choix))
+        {
+            //Ajouter la graine à l'inventaire
+            string nomGraine = choix + " (graine)";
+            if (!Inventaire.ContainsKey(nomGraine))
+                Inventaire[nomGraine] = 0;
+            Inventaire[nomGraine]++;
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"✅ Graine de {choix} achetée ! Argent restant: {Economie.ArgentJoueur}€");
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("❌ Achat impossible ! (argent insuffisant ou plante inconnue)");
+        }
+
+        Console.ResetColor();
+        Thread.Sleep(2000);
+    }
+    //Renvoie un résumé de l'état du jeu
     public string ObtenirResume()
     {
         string resume = $"👤 {NomJoueur} - Année {AnneeActuelle}, {SaisonActuelle} (Semaine {SemaineActuelle})\n";
         resume += "═══════════════════════════════════════════════════════════\n";
         resume += TerrainActuel.ObtenirResume();
         resume += "\n🎒 Inventaire:\n";
-        
+
         if (Inventaire.Count == 0)
         {
             resume += "   Vide\n";
@@ -176,43 +305,48 @@ public class GestionJeu
                 resume += $"   📦 {item.Key}: {item.Value}\n";
             }
         }
-        
+
         resume += $"\n⭐ Expérience: {PointsExperience} points\n";
-        
+        resume += $"💰 Argent: {Economie.ArgentJoueur}€\n";
+
         return resume;
     }
-    
-    // Ajoute une nouvelle fonctionnalité pour afficher la grille du terrain en mode console
+
+    //Ajoute une nouvelle fonctionnalité pour afficher la grille du terrain en mode console
     public void AfficherTerrainConsole()
     {
         Console.Clear();
-        
-        // Affiche le titre avec un style plus esthétique
+
+        //Affiche le titre avec un style plus esthétique
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine("╔═══════════════════════════════════════════════════════════════════════════════╗");
         Console.WriteLine("║                              🌱 Potager et Cie 🌱                             ║");
         Console.WriteLine("╚═══════════════════════════════════════════════════════════════════════════════╝");
-        
-        // Informations du jeu
+
+        //Informations du jeu
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine($"👤 Jardinier: {NomJoueur}");
         Console.WriteLine($"📅 Année {AnneeActuelle} - {GetSaisonEmoji(SaisonActuelle)} {SaisonActuelle} (Semaine {SemaineActuelle})");
         Console.WriteLine($"🏞️  Terrain: {TerrainActuel.Nom} - {GetTerrainEmoji(TerrainActuel.TypeTerrain)}Type: {TerrainActuel.TypeTerrain}");
         Console.WriteLine($"🌡️  {TerrainActuel.Temperature}°C | 💧 {TerrainActuel.NiveauHumidite}% | ☀️  {TerrainActuel.NiveauSoleil}%");
         Console.WriteLine();
-
-        // Affiche la grille avec des bordures
+        if (derniereIntemperie != Meteo.TypeIntemperie.Normale)
+        {
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine($"🌤️  Météo: {GetIntempErieEmoji(derniereIntemperie)} {derniereIntemperie}");
+        }
+        //Affiche la grille avec des bordures
         Console.ForegroundColor = ConsoleColor.White;
-        
-        // Indique les coordonnées X en haut
+
+        //Indique les coordonnées X en haut
         Console.Write("    ");
         for (int x = 0; x < TerrainActuel.Largeur; x++)
         {
             Console.Write($"{x:D2} ");
         }
         Console.WriteLine();
-        
-        // Bordure supérieure
+
+        //Bordure supérieure
         Console.Write("   ╔");
         for (int x = 0; x < TerrainActuel.Largeur; x++)
         {
@@ -220,13 +354,13 @@ public class GestionJeu
             if (x < TerrainActuel.Largeur - 1) Console.Write("╤");
         }
         Console.WriteLine("╗");
-        
-        // Affiche la grille du terrain
+
+        //Affiche la grille du terrain
         for (int y = 0; y < TerrainActuel.Hauteur; y++)
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write($"{y:D2} ║");
-            
+
             for (int x = 0; x < TerrainActuel.Largeur; x++)
             {
                 if (TerrainActuel.Grille[x, y].EstVide())
@@ -237,31 +371,35 @@ public class GestionJeu
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.Write($"{TerrainActuel.Grille[x, y].ObtenirVisuel()}");  
-                    // Définir la couleur selon l'état de santé
-                    // double sante = TerrainActuel.Grille[x, y].ObtenirSante();
                     
-                    // if (TerrainActuel.Grille[x, y].EstMalade())
-                    // {
-                    //     Console.ForegroundColor = ConsoleColor.Red;
-                    // }
-                    // else if (sante < 30)
-                
-                    // {
-                    //     Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    // }
-                    // else if (sante < 70)
-                    // {
-                    //     Console.ForegroundColor = ConsoleColor.Yellow;
-                    // }
-                    // else
-                    // {
-                    //     Console.ForegroundColor = ConsoleColor.Green;
-                    // }
-                    
-                    // Console.Write($"{TerrainActuel.Grille[x, y].ObtenirVisuel()} ");
+                    //Définir la couleur selon l'état de santé
+                    double sante = TerrainActuel.Grille[x, y].ObtenirSante();
+
+                    if (TerrainActuel.Grille[x, y].EstMalade())
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                    }
+                    else if (sante > 70)
+
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                    }
+                    else if (sante >50)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                    }
+                    else if (sante >25)
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                    }
+
+                    Console.Write($"{TerrainActuel.Grille[x, y].ObtenirVisuel()}");
                 }
-                
+
                 if (x < TerrainActuel.Largeur - 1)
                 {
                     Console.ForegroundColor = ConsoleColor.White;
@@ -270,8 +408,8 @@ public class GestionJeu
             }
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("║");
-            
-            // Ligne séparatrice entre les lignes
+
+            //Ligne séparatrice entre les lignes
             if (y < TerrainActuel.Hauteur - 1)
             {
                 Console.Write("   ╟");
@@ -283,8 +421,8 @@ public class GestionJeu
                 Console.WriteLine("╢");
             }
         }
-        
-        // Bordure inférieure
+
+        //Bordure inférieure
         Console.Write("   ╚");
         for (int x = 0; x < TerrainActuel.Largeur; x++)
         {
@@ -292,8 +430,8 @@ public class GestionJeu
             if (x < TerrainActuel.Largeur - 1) Console.Write("╧");
         }
         Console.WriteLine("╝");
-        
-        // Légende
+
+        //Légende
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("\n📊 État des plantes:");
         Console.ForegroundColor = ConsoleColor.Green;
@@ -304,22 +442,23 @@ public class GestionJeu
         Console.Write("🟠 Faible  ");
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("🔴 Malade");
-        
-        // Menu des commandes avec emojis
+
+        //Menu des commandes avec emojis
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine("\n🎮 COMMANDES:");
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("💧 (A)rroser    💊 (S)oigner    🌾 (R)écolter    ❌ (E)nlever");
-        Console.WriteLine("🌱 (P)lanter    ⏰ (T)emps +1    👋 (Q)uitter");
+        Console.WriteLine("🌱 (P)lanter    ⏰ (T)emps +1    🏪 (M)agasin    💰 (V)endre");
+        Console.WriteLine("👋 (Q)uitter");
         Console.WriteLine();
-        
-        // Afficher l'inventaire et l'XP
+
+        //Afficher l'inventaire et l'XP
         Console.ForegroundColor = ConsoleColor.Magenta;
         Console.WriteLine($"🎒 Inventaire: {GetInventaireResume()}");
-        Console.WriteLine($"⭐ Expérience: {PointsExperience} points");
+        Console.WriteLine($"⭐ Expérience: {PointsExperience} points | 💰 Argent: {Economie.ArgentJoueur}€");
     }
-    
-    // Méthodes auxiliaires pour les emojis
+
+    //Méthodes auxiliaires pour les emojis
     private string GetSaisonEmoji(string saison)
     {
         switch (saison.ToLower())
@@ -331,7 +470,7 @@ public class GestionJeu
             default: return "🌱";
         }
     }
-    
+
     private string GetTerrainEmoji(string typeTerrain)
     {
         switch (typeTerrain.ToLower())
@@ -344,75 +483,80 @@ public class GestionJeu
             default: return "🌍 ";
         }
     }
-    
+
     private string GetInventaireResume()
     {
         if (Inventaire.Count == 0)
             return "Vide";
-        
+
         string resume = "";
+        int count = 0;
         foreach (var item in Inventaire)
         {
-            resume += $"{item.Key}: {item.Value} ";
+            if (item.Value > 0 && count < 3) //on limite l'affichage
+            {
+                resume += $"{item.Key}:{item.Value} ";
+                count++;
+            }
         }
+        if (Inventaire.Count > 3) resume += "...";
         return resume;
     }
-    
-    // Méthode pour gérer l'interface utilisateur en mode console
+    //méthode qui permet de gérer l'interface utilisateur en mode console
     public void LancerInterfaceConsole()
     {
         bool continuer = true;
-        
+
         while (continuer)
         {
             AfficherTerrainConsole();
-            
+
             Console.Write("\nAction > ");
             string? commande = Console.ReadLine()?.ToUpper();
-            
+
             if (string.IsNullOrEmpty(commande))
             {
                 continue;
             }
-            
+
             switch (commande)
             {
-                case "A": // Arroser
+                case "A": //Arroser
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("💧 Arrosage...");
                     Thread.Sleep(500);
                     ExecuterActionSurParcelle("Arroser");
                     break;
-                    
-                case "S": // Soigner
+
+                case "S": //Soigner
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("💊 Soin des plantes...");
                     Thread.Sleep(500);
                     ExecuterActionSurParcelle("Soigner");
                     break;
-                    
-                case "R": // Récolter
+
+                case "R": //Récolter
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine("🌾 Récolte...");
                     Thread.Sleep(500);
                     ExecuterActionSurParcelle("Récolter");
                     break;
-                    
-                case "E": // Enlever
+
+                case "E": //Enlever
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("❌ Enlèvement de plante...");
                     Thread.Sleep(500);
                     ExecuterActionSurParcelle("Enlever");
                     break;
-                    
-                case "P": // Planter
+
+                case "P": //Planter
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("🌱 Plantation...");
                     Thread.Sleep(500);
                     ExecuterActionSurParcelle("Planter");
                     break;
-                    
-                case "T": // Avancer le temps
+
+                case "T": //Avancer le temps
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine("⏰ Le temps passe...");
                     Thread.Sleep(500);
@@ -420,14 +564,28 @@ public class GestionJeu
                     Console.WriteLine($"📅 Nous sommes maintenant en {GetSaisonEmoji(SaisonActuelle)} {SaisonActuelle}, semaine {SemaineActuelle}");
                     Thread.Sleep(1000);
                     break;
-                    
-                case "Q": // Quitter
+
+                case "M": //Magasin
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("🏪 Accès au magasin...");
+                    Thread.Sleep(500);
+                    AfficherMagasin();
+                    break;
+
+                case "V": //Vendre
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("💰 Vente de produits...");
+                    Thread.Sleep(500);
+                    VendreProduits();
+                    break;
+
+                case "Q": //Quitter
                     Console.ForegroundColor = ConsoleColor.Magenta;
                     Console.WriteLine("👋 Au revoir!");
                     Thread.Sleep(500);
                     continuer = false;
                     break;
-                    
+
                 default:
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("❌ Commande non reconnue.");
@@ -436,8 +594,8 @@ public class GestionJeu
             }
         }
     }
-    
-    // Méthode auxiliaire pour exécuter une action sur une parcelle spécifique
+
+    //Méthode auxiliaire pour exécuter une action sur une parcelle spécifique
     private void ExecuterActionSurParcelle(string action)
     {
         try
@@ -451,7 +609,7 @@ public class GestionJeu
                 return;
             }
             int x = int.Parse(xInput);
-            
+
             Console.Write("Position Y (0-" + (TerrainActuel.Hauteur - 1) + "): ");
             string? yInput = Console.ReadLine();
             if (string.IsNullOrEmpty(yInput))
@@ -461,65 +619,114 @@ public class GestionJeu
                 return;
             }
             int y = int.Parse(yInput);
-            
+
             if (x < 0 || x >= TerrainActuel.Largeur || y < 0 || y >= TerrainActuel.Hauteur)
             {
                 Console.WriteLine("Position invalide!");
                 Thread.Sleep(1000);
                 return;
             }
-            
+
             string message = "";
-            
+
             switch (action)
             {
                 case "Planter":
-                    bool selectionValide = false;
-                    Plante planteChoisie = null;
-                    while (!selectionValide)
-                    {
-                        Console.WriteLine("(R)ose   (T)omate");
-                        Console.Write("Quelle plante voulez-vous planter ? ");
-                        string? planteChoisi = Console.ReadLine()?.ToUpper();
-                        
-                        if (string.IsNullOrEmpty(planteChoisi)) continue;
-
-                        switch (planteChoisi)
-                        {
-                            case "R":
-                                planteChoisie = new Rose(); // suppose que Tomate hérite de Plante
-                                selectionValide = true;
-                                break;
-                            case "T":
-                                planteChoisie = new Tomate(); // suppose que Tomate hérite de Plante
-                                selectionValide = true;
-                                break;
-                            default:
-                                Console.WriteLine("❌ Plante non reconnue.");
-                                break;
-                        }
-                    }
-                    if (planteChoisie != null)
-                    {
-                        bool plantee = PlanterPlante(planteChoisie, x, y); // méthode avec Plante + x + y
-                        message = plantee ? "✅ Plante plantée !" : "❌ Échec de la plantation.";
-                        Console.ForegroundColor = plantee ? ConsoleColor.Green : ConsoleColor.Red;
-                    }
-                    break;
+                bool selectionValide = false;
+                Plante planteChoisie = null;
+                string nomPlanteChoisie = "";
+                
+                while (!selectionValide)
+                {
+                    Console.WriteLine("Plantes disponibles:");
+                    Console.WriteLine("🌹 (R)ose    🍅 (T)omate    🥕 (C)arotte");
+                    Console.WriteLine("🌻 (S)oleil  🌿 (B)asilic");
+                    Console.Write("Quelle plante voulez-vous planter ? ");
+                    string? planteChoisi = Console.ReadLine()?.ToUpper();
                     
+                    if (string.IsNullOrEmpty(planteChoisi)) continue;
+
+                    switch (planteChoisi)
+                    {
+                        case "R":
+                            nomPlanteChoisie = "Rose";
+                            break;
+                        case "T":
+                            nomPlanteChoisie = "Tomate";
+                            break;
+                        case "C":
+                            nomPlanteChoisie = "Carotte";
+                            break;
+                        case "S":
+                            nomPlanteChoisie = "Tournesol";
+                            break;
+                        case "B":
+                            nomPlanteChoisie = "Basilic";
+                            break;
+                        default:
+                            Console.WriteLine("❌ Plante non reconnue.");
+                            continue;
+                    }
+                    
+                    //Vérifier si on a la graine dans l'inventaire
+                    string nomGraine = nomPlanteChoisie + " (graine)";
+                    if (Inventaire.ContainsKey(nomGraine) && Inventaire[nomGraine] > 0)
+                    {
+                        //On a la graine, on peut planter
+                        planteChoisie = nomPlanteChoisie switch
+                        {
+                            "Rose" => new Rose(),
+                            "Tomate" => new Tomate(),
+                            "Carotte" => new Carotte(),
+                            "Tournesol" => new Tournesol(),
+                            "Basilic" => new Basilic(),
+                            _ => null
+                        };
+                        selectionValide = true;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"❌ Vous n'avez pas de graine de {nomPlanteChoisie} !");
+                        Console.WriteLine("💡 Rendez-vous au magasin (M) pour acheter des graines.");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Thread.Sleep(2000);
+                        return; //Sortir de la méthode
+                    }
+                }
+                
+                if (planteChoisie != null)
+                {
+                    bool plantee = PlanterPlante(planteChoisie, x, y);
+                    if (plantee)
+                    {
+                        //Consommer la graine de l'inventaire
+                        string nomGraine = nomPlanteChoisie + " (graine)";
+                        Inventaire[nomGraine]--;
+                        message = $"✅ {nomPlanteChoisie} plantée ! (Graine consommée)";
+                        Console.ForegroundColor = ConsoleColor.Green;
+                    }
+                    else
+                    {
+                        message = "❌ Échec de la plantation.";
+                        Console.ForegroundColor = ConsoleColor.Red;
+                    }
+                }
+                break;
+
 
                 case "Arroser":
                     ArroserParcelle(x, y);
                     message = "✅ Parcelle arrosée! 💧";
                     Console.ForegroundColor = ConsoleColor.Blue;
                     break;
-                    
+
                 case "Soigner":
                     SoignerPlante(x, y);
                     message = "✅ Plante soignée! 💊";
                     Console.ForegroundColor = ConsoleColor.Green;
                     break;
-                    
+
                 case "Récolter":
                     int recolte = RecolterParcelle(x, y);
                     if (recolte > 0)
@@ -533,7 +740,7 @@ public class GestionJeu
                         Console.ForegroundColor = ConsoleColor.Red;
                     }
                     break;
-                    
+
                 case "Enlever":
                     bool enleve = EnleverPlante(x, y);
                     if (enleve)
@@ -548,7 +755,7 @@ public class GestionJeu
                     }
                     break;
             }
-            
+
             Console.WriteLine(message);
             Console.ForegroundColor = ConsoleColor.White;
             Thread.Sleep(1000);
@@ -560,5 +767,30 @@ public class GestionJeu
             Console.ForegroundColor = ConsoleColor.White;
             Thread.Sleep(1000);
         }
+    }
+    private string GetIntempErieEmoji(Meteo.TypeIntemperie intemperie)
+    {
+        return intemperie switch
+        {
+            Meteo.TypeIntemperie.Pluie => "🌧️",
+            Meteo.TypeIntemperie.Secheresse => "☀️",
+            Meteo.TypeIntemperie.Grele => "🧊",
+            Meteo.TypeIntemperie.Gel => "❄️",
+            Meteo.TypeIntemperie.Canicule => "🔥",
+            _ => "☁️"
+        };
+    }
+    
+    private string GetEmojiPlante(string nom)
+    {
+        return nom switch
+        {
+            "Tomate" => "🍅",
+            "Rose" => "🌹",
+            "Carotte" => "🥕",
+            "Tournesol" => "🌻",
+            "Basilic" => "🌿",
+            _ => "🌱"
+        };
     }
 }

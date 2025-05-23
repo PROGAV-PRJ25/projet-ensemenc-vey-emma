@@ -210,6 +210,82 @@ public class Rose : Plante
         return "🌹";
     }
 }
+public class Carotte : Plante
+{
+    public Carotte() : base(
+        nom: "Carotte",
+        nature: "Consommable",
+        saisonOptimale: "Automne",
+        typePref: "Sable",
+        espacementEntre2: 0.5,
+        placeNecessaire: 0.5,
+        vitessePousse: 1.5,
+        eauNecessaire: 1,
+        lumiereNecessaire: 60,
+        temperaturePref: 15,
+        maladiePotentielle: "Mouche de la carotte",
+        esperanceVie: 16,
+        nombreProduction: 1,
+        visuel: "🥕",
+        niveauHumiditePref: 50)
+    { }
 
+    public override string ObtenirVisuel()
+    {
+        return "🥕";
+    }
+}
+
+public class Tournesol : Plante
+{
+    public Tournesol() : base(
+        nom: "Tournesol",
+        nature: "Ornementale",
+        saisonOptimale: "Été",
+        typePref: "Terre fertile",
+        espacementEntre2: 2,
+        placeNecessaire: 2,
+        vitessePousse: 4,
+        eauNecessaire: 2,
+        lumiereNecessaire: 90,
+        temperaturePref: 28,
+        maladiePotentielle: "Sclérotinia",
+        esperanceVie: 20,
+        nombreProduction: 1,
+        visuel: "🌻",
+        niveauHumiditePref: 55)
+    { }
+
+    public override string ObtenirVisuel()
+    {
+        return "🌻";
+    }
+}
+
+public class Basilic : Plante
+{
+    public Basilic() : base(
+        nom: "Basilic",
+        nature: "Aromatique",
+        saisonOptimale: "Été",
+        typePref: "Terre meuble",
+        espacementEntre2: 1,
+        placeNecessaire: 1,
+        vitessePousse: 2.5,
+        eauNecessaire: 1.8,
+        lumiereNecessaire: 75,
+        temperaturePref: 24,
+        maladiePotentielle: "Fusariose",
+        esperanceVie: 15,
+        nombreProduction: 3,
+        visuel: "🌿",
+        niveauHumiditePref: 65)
+    { }
+
+    public override string ObtenirVisuel()
+    {
+        return "🌿";
+    }
+}
 
 
