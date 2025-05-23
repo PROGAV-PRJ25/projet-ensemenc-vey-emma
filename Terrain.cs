@@ -50,7 +50,7 @@ public abstract class Terrain
     {
         if (x < 0 || x >= Largeur || y < 0 || y >= Hauteur) //vérifier si la case est dans les limites
             return false;
-        if (!Grille[x, y].EstVide())//vérifie si la case est bien vide
+        if (!Grille[x, y].VerifierEstVide())//vérifie si la case est bien vide
             return false;
         
         if (!VerifierEspacement(plante, x, y)) //vérifier si la plante a l'espacde nécessaire
@@ -70,7 +70,7 @@ public abstract class Terrain
             for (int j = Math.Max(0, y - (int)Math.Ceiling(espacementRequis)); j <= Math.Min(Hauteur - 1, y + (int)Math.Ceiling(espacementRequis)); j++)
             {
                 //Si ce n'est pas la parcelle actuelle et qu'elle n'est pas vide
-                if ((i != x || j != y) && !Grille[i, j].EstVide())
+                if ((i != x || j != y) && !Grille[i, j].VerifierEstVide())
                 {
                     //Calculer la distance entre les parcelles
                     double distance = Math.Sqrt(Math.Pow(i - x, 2) + Math.Pow(j - y, 2));
@@ -96,7 +96,7 @@ public abstract class Terrain
             for (int j = Math.Max(0, y - rayonRecherche); j <= Math.Min(Hauteur - 1, y + rayonRecherche); j++)
             {
                 //Si la parcelle est vide, on l'ajoute à l'espace disponible
-                if (Grille[i, j].EstVide())
+                if (Grille[i, j].VerifierEstVide())
                 {
                     double distance = Math.Sqrt(Math.Pow(i - x, 2) + Math.Pow(j - y, 2));
                     if (distance <= rayonRecherche)
@@ -121,7 +121,7 @@ public abstract class Terrain
         {
             for (int j = 0; j < Hauteur; j++)
             {
-                if (!Grille[i, j].EstVide())
+                if (!Grille[i, j].VerifierEstVide())
                 {
                     double espaceDisponible = CalculerEspaceDisponible(i, j);
                     Grille[i, j].ProgresserSemaine(TypeTerrain, NiveauHumidite, NiveauSoleil, Temperature, espaceDisponible);
@@ -167,7 +167,7 @@ public abstract class Terrain
     //méthode arroser une parcelle 
     public virtual void ArroserParcelle(int x, int y)
     {
-        if (x >= 0 && x < Largeur && y >= 0 && y < Hauteur && !Grille[x, y].EstVide())
+        if (x >= 0 && x < Largeur && y >= 0 && y < Hauteur && !Grille[x, y].VerifierEstVide())
         {
             Grille[x, y].Arroser();
         }
@@ -176,7 +176,7 @@ public abstract class Terrain
     //méthode récolter une parcelle
     public virtual int RecolterParcelle(int x, int y)
     {
-        if (x >= 0 && x < Largeur && y >= 0 && y < Hauteur && !Grille[x, y].EstVide())
+        if (x >= 0 && x < Largeur && y >= 0 && y < Hauteur && !Grille[x, y].VerifierEstVide())
         {
             return Grille[x, y].Recolter();
         }
@@ -186,7 +186,7 @@ public abstract class Terrain
     //méthode soigner une plante
     public virtual void SoignerPlante(int x, int y)
     {
-        if (x >= 0 && x < Largeur && y >= 0 && y < Hauteur && !Grille[x, y].EstVide())
+        if (x >= 0 && x < Largeur && y >= 0 && y < Hauteur && !Grille[x, y].VerifierEstVide())
         {
             Grille[x, y].Soigner();
         }
@@ -195,7 +195,7 @@ public abstract class Terrain
     //méthode enlever une plante 
     public virtual bool EnleverPlante(int x, int y)
     {
-        if (x >= 0 && x < Largeur && y >= 0 && y < Hauteur && !Grille[x, y].EstVide())
+        if (x >= 0 && x < Largeur && y >= 0 && y < Hauteur && !Grille[x, y].VerifierEstVide())
         {
             return Grille[x, y].EnleverPlante();
         }
@@ -216,10 +216,10 @@ public abstract class Terrain
         {
             for (int j = 0; j < Hauteur; j++)
             {
-                if (!Grille[i, j].EstVide())
+                if (!Grille[i, j].VerifierEstVide())
                 {
                     plantesTotal++;
-                    if (Grille[i, j].EstMalade())
+                    if (Grille[i, j].VerifierEstMalade())
                     {
                         plantesMalades++;
                     }

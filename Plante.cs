@@ -19,7 +19,7 @@ public abstract class Plante
     //paramètres d'état descriptifs
     public double TailleActuelle { get; protected set; } //taille actuelle en cm
     public double SanteActuelle { get; set; } //pourcentage de santé entre 0 et 100
-    public bool EstMalade { get; set; } //indique si la plante est malade - changé de protected set à public set
+    public bool VerifierEstMalade { get; set; } //indique si la plante est malade - changé de protected set à public set
     public int Age { get; protected set; } //âge en semaines
     public int ProductionActuelle { get; protected set; } //nombre de fruits/fleurs actuellement produits
 
@@ -48,7 +48,7 @@ public abstract class Plante
         //initialis de l'état
         TailleActuelle = 0;
         SanteActuelle = 100;
-        EstMalade = false;
+        VerifierEstMalade = false;
         Age = 0;
         ProductionActuelle = 0;
 
@@ -66,7 +66,7 @@ public abstract class Plante
         pourcentageConditions += 20 * (1 - differenceHumidite / 100); //20% max 
         double differenceEnsoleillement = Math.Abs(EnsoleillementNecessaire - niveauSoleil); //soleil
         pourcentageConditions += 20 * (1 - differenceEnsoleillement / 100);//pareil que humidité 20%
-        if (!EstMalade)
+        if (!VerifierEstMalade)
         {
             pourcentageConditions += 10; //si saine impact de 10% sur le coeff
         }
@@ -101,9 +101,9 @@ public abstract class Plante
         }
         
         //proba de tomber malade
-        if (!EstMalade && new Random().NextDouble() < 0.05) //5% de chance par semaine
+        if (!VerifierEstMalade && new Random().NextDouble() < 0.05) //5% de chance par semaine
         {
-            EstMalade = true;
+            VerifierEstMalade = true;
         }
         
         //vieillissement de la plante
@@ -137,9 +137,9 @@ public abstract class Plante
     //méthode soin
     public virtual void Soigner()
     {
-        if (EstMalade)
+        if (VerifierEstMalade)
         {
-            EstMalade = false;
+            VerifierEstMalade = false;
             SanteActuelle = Math.Min(SanteActuelle + 15, 100);
         }
     }
